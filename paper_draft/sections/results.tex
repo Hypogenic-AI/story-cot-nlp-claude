@@ -1,0 +1,89 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Main Results}
+\label{sec:main_results}
+
+\Tabref{tab:main} presents accuracy across all four prompting strategies and benchmarks. The central finding is clear: \storycot and \fewshotcot achieve virtually identical performance across all datasets.
+
+\begin{table}[t]
+\centering
+\caption{Accuracy (\%) across four prompting strategies and benchmarks. Values in brackets are bootstrap 95\% confidence intervals. Bold indicates the best result per dataset. \storycot and \fewshotcot show no statistically significant differences on any benchmark.}
+\label{tab:main}
+\vspace{4pt}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Dataset} & \directprompt & \zeroshotcot & \fewshotcot & \storycot \\
+\midrule
+\gsm (Math) & 59.3 {\small [51.3, 67.3]} & {\bf 96.0} {\small [92.7, 98.7]} & 95.3 {\small [92.0, 98.7]} & 95.3 {\small [92.0, 98.7]} \\
+\csqa (Commonsense) & 88.7 {\small [83.3, 93.3]} & 74.7 {\small [67.3, 81.3]} & 88.0 {\small [82.7, 93.3]} & {\bf 89.3} {\small [84.0, 94.0]} \\
+\strategyqa (Multi-hop) & 84.7 {\small [78.7, 90.0]} & 86.0 {\small [80.0, 91.3]} & {\bf 89.3} {\small [84.0, 94.0]} & 88.0 {\small [82.7, 92.7]} \\
+\arc (Science) & 75.3 {\small [68.7, 82.0]} & 72.0 {\small [64.7, 79.3]} & 93.3 {\small [89.3, 97.3]} & {\bf 94.7} {\small [90.7, 98.0]} \\
+\midrule
+Average & 77.0 & 82.2 & 91.5 & 91.8 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+On \gsm, both \fewshotcot and \storycot achieve 95.3\% accuracy---a 36 pp improvement over \directprompt (59.3\%). On \arc, \storycot achieves 94.7\% compared to \fewshotcot's 93.3\%, a difference of 1.4 pp that does not reach significance. The average accuracy across all four benchmarks is 91.8\% for \storycot versus 91.5\% for \fewshotcot.
+
+\subsection{Statistical Comparison: \storycot vs.\ \fewshotcot}
+\label{sec:statistical}
+
+\Tabref{tab:mcnemar} shows the results of McNemar's test comparing \storycot and \fewshotcot on each benchmark. None of the four comparisons approach statistical significance.
+
+\begin{table}[t]
+\centering
+\caption{McNemar's test comparing \storycot vs.\ \fewshotcot. ``Story wins'' and ``CoT wins'' count questions where one method is correct and the other is not. No comparison reaches statistical significance.}
+\label{tab:mcnemar}
+\vspace{4pt}
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+\textbf{Dataset} & Story wins & CoT wins & $\chi^2$ & $p$-value & Sig. \\
+\midrule
+\gsm & 3 & 3 & 0.17 & 0.683 & n.s. \\
+\csqa & 6 & 4 & 0.10 & 0.752 & n.s. \\
+\strategyqa & 5 & 7 & 0.08 & 0.773 & n.s. \\
+\arc & 2 & 0 & 0.50 & 0.480 & n.s. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The disagreement counts are small: at most 6 questions (out of 150) where \storycot succeeds and \fewshotcot fails, or vice versa. This high agreement rate (93--98\% of questions answered identically) underscores the format equivalence.
+
+\subsection{Effect of CoT on Different Domains}
+\label{sec:cot_effects}
+
+While the \storycot vs.\ \fewshotcot comparison yields null results, the broader pattern across all four strategies reveals important domain-specific effects:
+
+\para{Math (\gsm).} CoT provides the largest benefit: both \fewshotcot and \storycot improve accuracy by 36 pp over \directprompt. \zeroshotcot achieves the highest absolute accuracy (96.0\%), suggesting that \gptfour has strong latent math capabilities that any form of intermediate reasoning can unlock.
+
+\para{Commonsense (\csqa).} \zeroshotcot \emph{degrades} performance by 14 pp relative to \directprompt (74.7\% vs.\ 88.7\%). This is consistent with prior findings that step-by-step reasoning can lead models to overthink straightforward commonsense questions \citep{schaeffer2023invalid}. Both few-shot methods recover, with \storycot achieving the highest accuracy (89.3\%).
+
+\para{Multi-hop (\strategyqa).} All four strategies perform within a 5 pp range (84.7--89.3\%), with \fewshotcot slightly ahead. The relatively small CoT benefit suggests that \gptfour can often retrieve multi-hop facts directly.
+
+\para{Science (\arc).} Few-shot methods provide a large benefit (+18--19 pp over \directprompt), and \zeroshotcot slightly \emph{hurts} performance (72.0\% vs.\ 75.3\%). This pattern mirrors \csqa: unguided reasoning can be counterproductive, but well-structured exemplars consistently help.
+
+\subsection{Response Length Analysis}
+\label{sec:length}
+
+\Tabref{tab:length} reports average response length across conditions. \storycot responses are comparable in length to \fewshotcot, except on \gsm where narrative framing produces 67\% longer responses (679 vs.\ 407 characters). Despite this increased verbosity, accuracy remains identical, indicating that the additional narrative tokens do not contribute to---or detract from---reasoning quality.
+
+\begin{table}[t]
+\centering
+\caption{Average response length (characters) across conditions. \storycot produces slightly longer responses on math but comparable lengths on other tasks.}
+\label{tab:length}
+\vspace{4pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Dataset} & \directprompt & \zeroshotcot & \fewshotcot & \storycot \\
+\midrule
+\gsm & 8 & 633 & 407 & 679 \\
+\csqa & 1 & 837 & 568 & 488 \\
+\strategyqa & 2 & 602 & 457 & 581 \\
+\arc & 35 & 1,065 & 553 & 572 \\
+\bottomrule
+\end{tabular}
+\end{table}

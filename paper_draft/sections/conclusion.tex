@@ -1,0 +1,8 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We conducted the first systematic comparison of narrative-form chain-of-thought reasoning (\storycot) against standard step-by-step CoT across four diverse reasoning benchmarks. Our results are unambiguous: \storycot and \fewshotcot achieve equivalent accuracy on math, commonsense, multi-hop, and science tasks, with all pairwise differences falling within 1.3 percentage points and none reaching statistical significance.
+
+This equivalence supports the computational scaffolding hypothesis---the benefit of \chainofthought prompting comes from generating intermediate tokens that enable computation, not from the logical form of those tokens. For practitioners, this means narrative reasoning prompts can be deployed without performance cost in applications where natural-sounding explanations are preferred, such as educational tools or conversational AI systems.
+
+Several directions remain open for future work. First, testing \storycot on smaller models near the CoT emergence threshold could reveal format sensitivities masked by \gptfour's strong capabilities. Second, combining \storycot with self-consistency decoding \citep{wang2023selfconsistency} could test whether narrative diversity improves majority voting. Third, evaluating on temporal and causal reasoning tasks with structured outputs---where \citet{zhang2024narrative} reported large gains---would clarify the boundary conditions of format equivalence. Finally, fine-tuning models to produce narrative reasoning, rather than merely prompting them, could yield different results than the prompting-only approach studied here.

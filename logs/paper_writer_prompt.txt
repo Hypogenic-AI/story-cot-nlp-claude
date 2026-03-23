@@ -1,0 +1,833 @@
+You are an academic paper writer. Generate a complete NEURIPS style paper
+based on the experiment results provided.
+
+════════════════════════════════════════════════════════════════════════════════
+                         IMPORTANT: BEFORE YOU START
+════════════════════════════════════════════════════════════════════════════════
+
+Before writing any content, you MUST complete these steps:
+
+1. READ THE SKILL: Review the paper-writer skill at .claude/skills/paper-writer/SKILL.md
+2. READ THE STYLE GUIDE: Study templates/paper_writing/lab_style_guide.md carefully
+3. REVIEW EXAMPLES: Browse paper_examples/ for formatting and language patterns:
+   - Look at sections/1.introduction.tex for language style
+   - Look at tables/*.tex for table formatting
+   - Look at commands/*.tex for macro usage
+4. VERIFY COMMAND TEMPLATES: Command templates (math.tex, general.tex, macros.tex) are pre-copied to paper_draft/commands/
+
+CRITICAL: Reference example papers for FORMATTING and LANGUAGE STYLE only.
+Do NOT copy content, phrasing, or narrative structure from the example papers.
+The examples are in a different research domain - focus only on presentation style.
+
+════════════════════════════════════════════════════════════════════════════════
+                            EXPERIMENT REPORT
+════════════════════════════════════════════════════════════════════════════════
+
+# Story Chain-of-Thought: Does Narrative Reasoning Improve LLM Performance?
+
+## 1. Executive Summary
+
+We conducted the first systematic comparison of story-form chain-of-thought (Story CoT) reasoning against standard CoT approaches across four diverse reasoning benchmarks using GPT-4.1. Our key finding is that **Story CoT performs comparably to standard few-shot CoT across all tested domains** — it neither significantly improves nor degrades performance. Across GSM8K (math), CommonsenseQA, StrategyQA (multi-hop), and ARC-Challenge (science), the accuracy differences between Story CoT and standard CoT were 0-1.3 percentage points and none reached statistical significance (all p &gt; 0.47). This suggests that for state-of-the-art LLMs, the **structure and presence of intermediate reasoning matters more than the specific format** (step-by-step vs. narrative), supporting the hypothesis that CoT benefits arise from computational scaffolding rather than logical form.
+
+## 2. Goal
+
+**Hypothesis**: Prompting LLMs to reason in narrative/story form (Story CoT) — similar to how humans recount memories or predict outcomes through mental simulation — will improve performance on certain tasks compared to standard step-by-step CoT, particularly on tasks with inherent causal or temporal structure.
+
+**Why this matters**: Current CoT methods use formulaic step-by-step decomposition, but cognitive science suggests humans often reason through narrative mental simulation. If narrative reasoning taps into different (and potentially stronger) model capabilities than standard CoT, this could improve performance and reveal fundamental insights about how LLMs process reasoning.
+
+**Gap in existing work**: The Narrative-of-Thought (NOT) paper (Zhang et al., 2024) showed dramatic improvements with narrative reasoning for temporal graph generation, but no study has systematically compared story-form CoT against standard CoT across diverse reasoning domains (math, commonsense, multi-hop, science).
+
+## 3. Data Construction
+
+### Dataset Description
+
+| Dataset | Source | Task Type | N (sampled) | Split |
+|---------|--------|-----------|-------------|-------|
+| GSM8K | OpenAI | Math word problems | 150 | Test |
+| CommonsenseQA | Allen AI | 5-way commonsense QA | 150 | Validation |
+| StrategyQA | BIU NLP | Yes/No multi-hop QA | 150 | Train |
+| ARC-Challenge | Allen AI | 4-way science QA | 150 | Test |
+
+### Example Samples
+
+**GSM8K**: &#34;Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?&#34; → **72**
+
+**CommonsenseQA**: &#34;The sanctions against the school were a punishing blow, and they seemed to what the efforts the school had made to change? (A) ignore (B) enforce (C) authoritarian (D) yell at (E) avoid&#34; → **A**
+
+**StrategyQA**: &#34;Is Mixed martial arts totally original from Roman Colosseum games?&#34; → **No**
+
+**ARC-Challenge**: &#34;Which property of a mineral can be determined just by looking at it? (A) luster (B) mass (C) weight (D) hardness&#34; → **A**
+
+### Preprocessing Steps
+1. Loaded datasets from pre-downloaded HuggingFace arrow files
+2. Randomly sampled 150 questions per dataset (seed=42)
+3. Extracted gold answers: numeric for GSM8K, letter for CommonsenseQA/ARC, boolean→Yes/No for StrategyQA
+
+### Data Quality
+- All 600 samples had valid questions and gold answers
+- No missing values or duplicates in sampled sets
+- Balanced label distributions checked for multiple-choice datasets
+
+## 4. Experiment Description
+
+### Methodology
+
+#### High-Level Approach
+We compare four prompting strategies on the same 150 questions per dataset, all using GPT-4.1 at temperature=0 for deterministic outputs:
+
+1. **Direct**: Answer immediately with no reasoning
+2. **Zero-shot CoT**: &#34;Let&#39;s think step by step&#34; (no exemplars)
+3. **Few-shot CoT**: 3 exemplars with standard step-by-step reasoning
+4. **Story CoT**: 3 exemplars with narrative-form reasoning
+
+#### Why This Method?
+- **Prompt-based comparison** is the standard in CoT literature (Wei et al., 2022; Zhang et al., 2024)
+- **Same model, same questions** enables paired statistical testing (McNemar&#39;s test)
+- **Multiple benchmarks** test whether effects are domain-specific
+- **GPT-4.1** is a state-of-the-art model, ensuring results are relevant to current practice
+
+### Implementation Details
+
+#### Tools and Libraries
+- OpenAI API: GPT-4.1 (2025)
+- Python 3.12.8
+- NumPy 2.3.0, Pandas, SciPy, Matplotlib, Seaborn
+- HuggingFace Datasets (for data loading)
+
+#### Prompting Design
+
+**Few-shot CoT exemplar** (GSM8K):
+&gt; Step 1: We start with 15 trees.
+&gt; Step 2: After planting, there are 21 trees.
+&gt; Step 3: The number planted is 21 - 15 = 6.
+
+**Story CoT exemplar** (same question):
+&gt; Imagine a grove at dawn with 15 trees standing tall. A team of workers arrives with saplings on a truck. They spend the morning digging holes and carefully planting new trees among the existing ones. By sunset, someone walks through and counts every tree — there are now 21 in total. The original 15 haven&#39;t changed, so the workers must have added 21 minus 15, which is 6 new trees during their day&#39;s work.
+
+Story CoT exemplars embed the same mathematical/logical steps within a vivid narrative, using characters, settings, and temporal progression.
+
+#### Hyperparameters
+
+| Parameter | Value | Selection Method |
+|-----------|-------|------------------|
+| Model | GPT-4.1 | Latest available |
+| Temperature | 0.0 | Deterministic |
+| Max tokens | 1024 | Sufficient for all tasks |
+| Few-shot examples | 3 | Standard in CoT literature |
+| Samples per dataset | 150 | Power analysis (~80% power for 10% diff) |
+| Random seed | 42 | Convention |
+
+### Experimental Protocol
+
+#### Reproducibility Information
+- Single run per condition (temperature=0 is deterministic)
+- Random seed: 42 (for data sampling)
+- Hardware: 4× NVIDIA RTX A6000 (48GB) — GPUs not used (API-based experiment)
+- Execution time: ~6 minutes total for all 2,400 API calls
+- 10 parallel workers for API calls
+
+#### Evaluation Metrics
+- **Accuracy**: Primary metric. Exact match of extracted answer vs. gold answer
+- **Response length**: Secondary. Measures verbosity of reasoning traces (characters)
+- **McNemar&#39;s test**: For pairwise strategy comparison (paired binary outcomes on same questions)
+- **Bootstrap 95% CIs**: Non-parametric confidence intervals (10,000 resamples)
+
+### Raw Results
+
+#### Main Results Table
+
+| Dataset | Direct | Zero-shot CoT | Few-shot CoT | Story CoT |
+|---------|--------|---------------|--------------|-----------|
+| **GSM8K** (Math) | 59.3% [51.3, 67.3] | **96.0%** [92.7, 98.7] | 95.3% [92.0, 98.7] | 95.3% [92.0, 98.7] |
+| **CommonsenseQA** | **88.7%** [83.3, 93.3] | 74.7% [67.3, 81.3] | 88.0% [82.7, 93.3] | **89.3%** [84.0, 94.0] |
+| **StrategyQA** (Multi-hop) | 84.7% [78.7, 90.0] | 86.0% [80.0, 91.3] | **89.3%** [84.0, 94.0] | 88.0% [82.7, 92.7] |
+| **ARC-Challenge** (Science) | 75.3% [68.7, 82.0] | 72.0% [64.7, 79.3] | 93.3% [89.3, 97.3] | **94.7%** [90.7, 98.0] |
+
+Values are accuracy (%) with 95% bootstrap confidence intervals.
+
+#### Statistical Tests: Story CoT vs. Few-shot CoT (McNemar&#39;s test)
+
+| Dataset | Story wins | CoT wins | χ² | p-value | Significance |
+|---------|-----------|----------|-----|---------|-------------|
+| GSM8K | 3 | 3 | 0.17 | 0.683 | n.s. |
+| CommonsenseQA | 6 | 4 | 0.10 | 0.752 | n.s. |
+| StrategyQA | 5 | 7 | 0.08 | 0.773 | n.s. |
+| ARC-Challenge | 2 | 0 | 0.50 | 0.480 | n.s. |
+
+**None of the comparisons reach statistical significance.** Story CoT and Few-shot CoT produce virtually identical results.
+
+#### Average Response Length (characters)
+
+| Dataset | Direct | Zero-shot CoT | Few-shot CoT | Story CoT |
+|---------|--------|---------------|--------------|-----------|
+| GSM8K | 8 | 633 | 407 | 679 |
+| CommonsenseQA | 1 | 837 | 568 | 488 |
+| StrategyQA | 2 | 602 | 457 | 581 |
+| ARC-Challenge | 35 | 1,065 | 553 | 572 |
+
+Story CoT responses are similar in length to few-shot CoT, except on GSM8K where narrative framing produces longer responses.
+
+#### Visualizations
+
+Results are saved as:
+- `results/plots/accuracy_comparison.png` — Grouped bar chart with 95% CIs
+- `results/plots/accuracy_heatmap.png` — Accuracy heatmap across all conditions
+- `results/plots/response_lengths.png` — Box plots of response lengths
+- `results/plots/story_vs_cot_scatter.png` — Scatter plot comparing Story CoT vs Few-shot CoT
+
+#### Token Usage and Cost
+- Total tokens: 443,836 input + 218,968 output = 662,804
+- Estimated cost: ~$2.64
+
+## 5. Result Analysis
+
+### Key Findings
+
+1. **Story CoT matches Few-shot CoT performance across all domains.** The largest observed difference was 1.3 percentage points (CommonsenseQA: Story 89.3% vs. CoT 88.0%; ARC: Story 94.7% vs. CoT 93.3%), and none reached statistical significance.
+
+2. **Both Few-shot CoT and Story CoT dramatically outperform Direct prompting** on tasks requiring multi-step reasoning (GSM8K: +36pp; ARC: +18-19pp), confirming the value of structured reasoning.
+
+3. **Zero-shot CoT underperforms Few-shot methods on 3 of 4 datasets.** Notably, Zero-shot CoT *degrades* performance on CommonsenseQA (74.7% vs. 88.7% direct), consistent with literature showing CoT can hurt on certain task types.
+
+4. **Story CoT produces qualitatively different reasoning** that embeds identical logical steps within narrative context (characters, settings, temporal progression), yet achieves the same accuracy.
+
+### Hypothesis Testing Results
+
+| Hypothesis | Result | Evidence |
+|-----------|--------|----------|
+| **H1**: Story CoT improves on causal/commonsense tasks | **Partially supported** | Story CoT achieves highest accuracy on CommonsenseQA (89.3%) and ARC (94.7%), but differences are not statistically significant |
+| **H2**: Story CoT degrades on math tasks | **Refuted** | Story CoT matches Few-shot CoT exactly on GSM8K (95.3% each) |
+| **H3**: Story CoT produces more diverse reasoning | **Supported qualitatively** | Story traces use different vocabulary and framing while reaching same conclusions |
+| **H4**: Effectiveness correlates with task narrative naturalness | **Weakly supported** | Largest (non-significant) gains on commonsense/science; neutral on math |
+
+### Qualitative Analysis of Reasoning Traces
+
+**Where Story CoT Wins (CommonsenseQA example):**
+- Q: &#34;How might releasing energy that has built up feel?&#34;
+- Story CoT correctly identified &#34;cathartic&#34; by narrating a stressed person exercising and feeling relief
+- Standard CoT chose a less apt answer through abstract step-by-step analysis
+
+**Where Story CoT Wins (ARC example):**
+- Q: &#34;If HCl is added to Zn, what would be an expected product?&#34;
+- Story CoT narrated a chemistry lab scene, vividly describing bubbles forming (hydrogen gas)
+- Standard CoT reasoned abstractly but selected the wrong product
+
+**Key pattern**: Story CoT wins tend to occur on questions where situational/experiential knowledge helps — the narrative frames the problem in a way that activates relevant world knowledge.
+
+### Surprises and Insights
+
+1. **Zero-shot CoT can be harmful.** On CommonsenseQA, &#34;Let&#39;s think step by step&#34; reduced accuracy by 14 percentage points compared to direct answering. This aligns with literature (Schaeffer et al., 2023) showing that CoT structure matters more than content.
+
+2. **Story CoT doesn&#39;t hurt math.** We hypothesized narrative framing would impair precise calculation, but GPT-4.1 successfully embeds calculations within stories (e.g., &#34;the cashier rings up 5 times $3, which comes to $15&#34;).
+
+3. **Format equivalence at the frontier.** The null result is itself informative: for GPT-4.1, the benefit of CoT comes from having *any* structured intermediate reasoning, not from the specific format. This supports the computational scaffolding hypothesis.
+
+### Error Analysis
+
+- **GSM8K errors** (both methods): Complex multi-step problems with large numbers, where arithmetic errors propagate. Both CoT formats fail similarly.
+- **CommonsenseQA errors** (both methods): Ambiguous questions where multiple answers seem plausible. Neither format provides an advantage.
+- **ARC errors**: Rare for both methods. The 2 cases where Story CoT won involved chemistry/physics scenarios where narrative context helped.
+
+### Limitations
+
+1. **Single model tested.** Results may differ for smaller models where CoT is an emergent capability, or for models with different training data distributions.
+2. **English-only, single run.** Temperature=0 means no variance across runs, but also no measure of model uncertainty.
+3. **Sample size.** 150 samples per dataset provides ~80% power to detect 10% accuracy differences, but not smaller effects.
+4. **Prompt engineering scope.** Only one Story CoT prompt design was tested. Alternative narrative styles (first-person, mystery format, dialogue) might yield different results.
+5. **Task scope.** The NOT paper showed Story CoT excels at temporal graph generation — a structured output task we did not test. Story CoT&#39;s benefits may be task-type specific rather than domain-specific.
+6. **No training-time intervention.** We only tested prompting. Training models to produce story-form CoT (as the original hypothesis suggests) could yield different results.
+
+## 6. Conclusions
+
+### Summary
+Story CoT performs **equivalently** to standard few-shot CoT across math, commonsense, multi-hop, and science reasoning benchmarks using GPT-4.1. The narrative framing neither helps nor hurts, suggesting that for state-of-the-art LLMs, the benefit of chain-of-thought reasoning comes from structured intermediate computation rather than the specific reasoning format.
+
+### Implications
+
+**Practical**: Practitioners can use narrative-form reasoning prompts without performance penalty. This may be valuable for applications where natural-sounding reasoning is preferred (explainable AI, educational tools, conversational agents).
+
+**Theoretical**: The format-independence of CoT benefits supports the *computational scaffolding hypothesis* — CoT works by providing intermediate token positions for computation, not by simulating human-like logical reasoning. This aligns with Schaeffer et al. (2023)&#39;s finding that even invalid logic in CoT maintains performance.
+
+### Confidence in Findings
+- **High confidence** that Story CoT does not significantly differ from Few-shot CoT on these benchmarks with GPT-4.1
+- **Moderate confidence** in generalization to other state-of-the-art models
+- **Lower confidence** about smaller models, where format effects may be larger
+
+## 7. Next Steps
+
+### Immediate Follow-ups
+1. **Test on temporal/causal tasks**: Replicate the NOT paper&#39;s temporal graph generation to confirm Story CoT&#39;s domain-specific advantages
+2. **Test on smaller models**: GPT-3.5-class models, Llama-8B, etc. where CoT format effects may emerge
+3. **Narrative style variants**: Test first-person narratives, dialogue, mystery-solving, etc.
+
+### Alternative Approaches
+- **Fine-tuning with story-form CoT**: Train models to produce narrative reasoning (the original hypothesis)
+- **Self-consistency with Story CoT**: Test if narrative diversity improves majority voting
+- **Hybrid approaches**: Standard CoT for math, Story CoT for commonsense, auto-selected by task type
+
+### Open Questions
+1. Why does narrative reasoning dramatically help temporal graph generation (Zhang et al., 2024) but not standard QA? Is it about structured output vs. answer extraction?
+2. At what model size threshold does CoT format start to matter?
+3. Can narrative structure improve CoT *faithfulness* (the reasoning-answer alignment issue identified by Arcuschin et al., 2025)?
+
+## References
+
+1. Wei, J., et al. (2022). Chain-of-thought prompting elicits reasoning in large language models. NeurIPS 2022.
+2. Wang, X., et al. (2022). Self-consistency improves chain of thought reasoning in language models. ICLR 2023.
+3. Zhang, X.F., Beauchamp, N., Wang, L. (2024). Narrative-of-Thought: Improving temporal reasoning via recounted narratives. Findings of EMNLP 2024.
+4. Yao, S., et al. (2023). Tree of thoughts: Deliberate problem solving with large language models. NeurIPS 2023.
+5. Schaeffer, R., Pistunova, K., Khanna, S. (2023). Invalid logic, equivalent gains: The bizarreness of reasoning in language model prompting.
+6. Arcuschin, I., et al. (2025). Chain-of-thought reasoning in the wild is not always faithful.
+7. Chen, Q., et al. (2025). Towards reasoning era: A survey of long chain-of-thought for reasoning LLMs.
+
+
+════════════════════════════════════════════════════════════════════════════════
+                            RESEARCH PLAN
+════════════════════════════════════════════════════════════════════════════════
+
+# Research Plan: Story Chain-of-Thought (Story CoT)
+
+## Motivation &amp; Novelty Assessment
+
+### Why This Research Matters
+Current chain-of-thought (CoT) methods use step-by-step logical decomposition, but humans often reason through narratives—recounting scenarios, simulating situations, and predicting outcomes through story-like mental simulations. If narrative-form reasoning taps into different (and potentially stronger) model capabilities than standard CoT, this could unlock improved performance and reveal fundamental insights about how LLMs reason.
+
+### Gap in Existing Work
+The Narrative-of-Thought (NOT) paper (Zhang et al., 2024) demonstrated that story-form CoT dramatically outperforms standard CoT for temporal reasoning (16-71% F1 improvement). However: (1) NOT was only tested on temporal graph generation—not on standard reasoning benchmarks like math, commonsense, or science; (2) No study systematically compares story-form CoT against standard CoT across multiple reasoning domains; (3) Schaeffer et al. (2023) showed invalid logic in CoT still helps, suggesting structure matters more than logical validity—but no one has tested whether narrative structure specifically contributes to this effect.
+
+### Our Novel Contribution
+We conduct the first systematic comparison of story-form CoT vs. standard CoT across four diverse reasoning benchmarks (math, commonsense, multi-hop, science) using state-of-the-art LLMs. We test whether narrative framing improves, maintains, or degrades performance compared to standard CoT, and analyze when and why narrative reasoning helps.
+
+### Experiment Justification
+- **Experiment 1 (Multi-benchmark comparison)**: Tests whether story CoT generalizes beyond temporal reasoning to math, commonsense, multi-hop, and science tasks. This is the core gap in the literature.
+- **Experiment 2 (Reasoning trace analysis)**: Analyzes qualitative differences between standard and story CoT traces to understand *why* any performance differences occur.
+- **Experiment 3 (Story prompt variants)**: Tests different narrative elicitation strategies to find the most effective way to induce story-form reasoning.
+
+## Research Question
+Does prompting LLMs to reason in narrative/story form (Story CoT) improve, match, or degrade task performance compared to standard step-by-step CoT, and does the effect vary by reasoning domain?
+
+## Hypothesis Decomposition
+1. **H1**: Story CoT improves performance on tasks with inherent causal/temporal structure (commonsense, multi-hop) compared to standard CoT.
+2. **H2**: Story CoT degrades or matches performance on tasks requiring precise logical/mathematical reasoning (GSM8K, ARC).
+3. **H3**: Story CoT produces more diverse reasoning paths than standard CoT, potentially benefiting self-consistency voting.
+4. **H4**: The effectiveness of Story CoT correlates with the narrative naturalness of the task domain.
+
+## Proposed Methodology
+
+### Approach
+We use the OpenAI API (GPT-4.1) to compare four prompting strategies across four benchmarks, evaluating accuracy as the primary metric. We sample 150 questions per dataset for cost-efficiency while maintaining statistical power.
+
+### Experimental Steps
+1. Load and sample datasets (GSM8K, CommonsenseQA, StrategyQA, ARC-Challenge)
+2. Design prompts: Direct, Zero-shot CoT, Few-shot CoT (3-shot), Story CoT (3-shot with narrative exemplars)
+3. Run all conditions through GPT-4.1 API
+4. Parse answers and compute accuracy
+5. Statistical comparison (McNemar&#39;s test for paired comparisons)
+6. Qualitative analysis of reasoning traces
+
+### Baselines
+1. **Direct prompting**: No reasoning, answer directly
+2. **Zero-shot CoT**: &#34;Let&#39;s think step by step&#34;
+3. **Few-shot CoT**: 3 exemplars with standard step-by-step reasoning
+4. **Story CoT**: 3 exemplars with narrative-form reasoning (&#34;Let me think through this as a story...&#34;)
+
+### Evaluation Metrics
+- **Primary**: Accuracy (exact match for math, letter match for multiple choice, boolean for yes/no)
+- **Secondary**: Response length, reasoning diversity (for self-consistency analysis)
+
+### Statistical Analysis Plan
+- McNemar&#39;s test for pairwise condition comparisons (paired binary outcomes)
+- 95% confidence intervals via bootstrap
+- Effect sizes reported as accuracy differences with CIs
+- Bonferroni correction for multiple comparisons
+
+## Expected Outcomes
+- Story CoT ≥ standard CoT on commonsense and multi-hop tasks (StrategyQA, CommonsenseQA)
+- Story CoT ≤ standard CoT on math (GSM8K) due to imprecise narrative reasoning
+- Mixed results on science (ARC) depending on question type
+
+## Timeline and Milestones
+1. Environment &amp; data setup: 10 min
+2. Prompt design &amp; implementation: 30 min
+3. API experiments (4 datasets × 4 conditions × 150 samples): 60-90 min
+4. Analysis &amp; visualization: 30 min
+5. Documentation: 20 min
+
+## Potential Challenges
+- API rate limits → use exponential backoff with retries
+- Answer parsing ambiguity → use robust regex + fallback parsing
+- Cost management → 150 samples × 4 conditions × 4 datasets = 2,400 API calls, est. $20-40
+
+## Success Criteria
+- Complete results for all 4 conditions on all 4 datasets
+- Statistical tests with p-values and confidence intervals
+- Clear answer to whether Story CoT helps, hurts, or is neutral vs. standard CoT
+- Qualitative insights into when narrative reasoning is beneficial
+
+
+════════════════════════════════════════════════════════════════════════════════
+                          LITERATURE REVIEW
+════════════════════════════════════════════════════════════════════════════════
+
+# Literature Review: Story Chain-of-Thought (Story CoT)
+
+## Research Area Overview
+
+This literature review examines the intersection of chain-of-thought (CoT) reasoning and narrative/story-based reasoning in large language models (LLMs). The core hypothesis is that training or prompting LLMs to use story-form CoT reasoning—similar to how humans recount memories or narrate experiences—may improve performance on certain reasoning tasks compared to standard CoT approaches.
+
+The review covers: (1) foundational CoT work, (2) CoT variants and structural alternatives, (3) narrative and story-based reasoning, and (4) analysis of when and why CoT works or fails.
+
+---
+
+## Key Papers
+
+### Paper 1: Chain-of-Thought Prompting Elicits Reasoning in Large Language Models
+- **Authors**: Jason Wei, Xuezhi Wang, Dale Schuurmans, et al.
+- **Year**: 2022
+- **Source**: NeurIPS 2022 (arXiv: 2201.11903)
+- **Key Contribution**: Introduced chain-of-thought (CoT) prompting—providing intermediate reasoning steps as exemplars—that significantly improves LLM performance on complex reasoning tasks.
+- **Methodology**: Few-shot prompting with manually written CoT exemplars. Tested on arithmetic (GSM8K), commonsense (CommonsenseQA, StrategyQA), and symbolic reasoning tasks.
+- **Datasets Used**: GSM8K, SVAMP, ASDiv, AQuA, CommonsenseQA, StrategyQA, letter concatenation, coin flip
+- **Results**: 540B PaLM with CoT achieves SOTA on GSM8K (56.9%), surpassing finetuned GPT-3. CoT is an emergent ability—effective only in models ≥100B parameters.
+- **Code Available**: No official repo
+- **Relevance to Story CoT**: This is the foundational work. Standard CoT uses step-by-step logical decomposition. Story CoT proposes an alternative: narrative-form reasoning that may tap into different model capabilities. The question is whether narrative structure adds something beyond linear step decomposition.
+
+### Paper 2: Self-Consistency Improves Chain of Thought Reasoning in Language Models
+- **Authors**: Xuezhi Wang, Jason Wei, Dale Schuurmans, et al.
+- **Year**: 2022
+- **Source**: ICLR 2023 (arXiv: 2203.11171)
+- **Key Contribution**: Proposed self-consistency—sampling multiple reasoning paths and selecting the most consistent answer via majority voting.
+- **Methodology**: Sample diverse CoT paths (temperature &gt; 0), then marginalize over paths to find the most consistent answer.
+- **Datasets Used**: GSM8K, SVAMP, AQuA, StrategyQA, ARC
+- **Results**: Significant improvements over greedy CoT (e.g., GSM8K: 56.5% → 74.4% with PaLM-540B). Works across different models and tasks.
+- **Relevance to Story CoT**: Self-consistency could be applied to Story CoT—generating multiple narrative reasoning paths and selecting the most consistent. Different narrative styles might produce more diverse reasoning paths than standard CoT.
+
+### Paper 3: NARRATIVE-OF-THOUGHT: Improving Temporal Reasoning via Recounted Narratives
+- **Authors**: Xinliang Frederick Zhang, Nick Beauchamp, Lu Wang
+- **Year**: 2024
+- **Source**: Findings of EMNLP 2024 (arXiv: 2410.05558)
+- **Key Contribution**: **Most directly relevant paper.** Proposed NARRATIVE-OF-THOUGHT (NOT)—a prompting technique where LLMs first generate a temporally grounded narrative, then use it to produce a temporal graph. This is essentially &#34;Story CoT&#34; applied to temporal reasoning.
+- **Methodology**:
+  1. Convert events to Python class structure
+  2. Prompt LLM to generate a narrative linking events in temporal order
+  3. Use narrative to guide temporal graph generation
+  4. Use narrative-aware few-shot demonstrations with reference narratives
+- **Datasets Used**: ProScript (2,077 scenarios, daily activities), Schema-11 (11 news scenarios), WikiHow Script (2,991 how-to scenarios)
+- **Results**:
+  - NOT boosts F1 by 16-71% over standard prompting across all base models
+  - NOT-augmented LLaMA3-8B achieves F1 comparable to GPT-3.5 (42.2 vs. 45.7)
+  - Outperforms GPT-3.5/4 on structural similarity (GED)
+  - Standard CoT actually *degrades* performance on temporal reasoning
+  - Key narrative qualities: **conciseness, simplicity, factuality**
+  - 72.8% self-faithfulness between narratives and temporal graphs
+- **Code Available**: Yes, https://github.com/launchnlp/NoT
+- **Relevance to Story CoT**: This IS Story CoT for temporal reasoning. Shows that narrative-form reasoning outperforms standard CoT specifically for temporal tasks. Critical finding: CoT fails on temporal reasoning, but narrative-form reasoning succeeds. The hypothesis that story-form CoT may reveal different model capabilities is directly supported.
+
+### Paper 4: Tree of Thoughts: Deliberate Problem Solving with Large Language Models
+- **Authors**: Shunyu Yao, Dian Yu, Jeffrey Zhao, et al.
+- **Year**: 2023
+- **Source**: NeurIPS 2023 (arXiv: 2305.10601)
+- **Key Contribution**: Extended CoT from linear chains to tree structures, enabling exploration and backtracking in reasoning.
+- **Methodology**: LLM generates and evaluates intermediate &#34;thoughts,&#34; explores multiple paths via BFS/DFS with self-evaluation.
+- **Datasets Used**: Game of 24, Creative Writing, Mini Crosswords
+- **Results**: Significantly outperforms CoT on tasks requiring exploration (e.g., Game of 24: 4% → 74%).
+- **Relevance to Story CoT**: ToT represents structural exploration of reasoning space. Story CoT could be seen as an alternative to tree exploration—using narrative structure to guide reasoning in a more human-like way rather than systematic search.
+
+### Paper 5: Chain-of-Thought Reasoning in the Wild Is Not Always Faithful
+- **Authors**: Iván Arcuschin, Jett Janiak, Robert Krzyzanowski, et al.
+- **Year**: 2025
+- **Source**: arXiv: 2503.08679
+- **Key Contribution**: Demonstrated that CoT reasoning in LLMs is not always faithful—the stated reasoning may not reflect the actual computation driving the answer.
+- **Relevance to Story CoT**: This raises a critical question for Story CoT: are narrative-form CoTs more or less faithful than standard CoTs? The NOT paper found 72.8% self-faithfulness. If standard CoT can be unfaithful, perhaps story-form reasoning, being more constrained by narrative coherence, could be more faithful.
+
+### Paper 6: Towards Reasoning Era: A Survey of Long Chain-of-Thought for Reasoning LLMs
+- **Authors**: Qiguang Chen, Libo Qin, Jinhao Liu, et al.
+- **Year**: 2025
+- **Source**: arXiv: 2503.09567
+- **Key Contribution**: Comprehensive survey of long CoT reasoning, covering training methods, prompting strategies, and evaluation for reasoning LLMs.
+- **Relevance to Story CoT**: Provides context on the state-of-the-art in CoT research. Story CoT naturally produces longer reasoning traces (narratives), so findings about long CoT performance and challenges are directly relevant.
+
+### Paper 7: Contrastive Chain-of-Thought Prompting
+- **Authors**: Yew Ken Chia, Guizhen Chen, Luu Anh Tuan, et al.
+- **Year**: 2023
+- **Source**: arXiv: 2311.09277
+- **Key Contribution**: Added both positive and negative (incorrect) exemplars to CoT demonstrations, helping models learn from mistakes.
+- **Relevance to Story CoT**: Contrastive examples could be applied to Story CoT—showing both good and bad narrative reasoning paths.
+
+### Paper 8: Chain of Code: Reasoning with a Language Model-Augmented Code Emulator
+- **Authors**: Chengshu Li, Jacky Liang, Andy Zeng, et al.
+- **Year**: 2023
+- **Source**: arXiv: 2312.04474
+- **Key Contribution**: Uses code as the reasoning medium, with LLM emulating code execution for non-deterministic steps.
+- **Relevance to Story CoT**: Represents the &#34;code as reasoning&#34; paradigm. The NOT paper already combines narrative with code representation. Story CoT generalizes the question: what is the optimal reasoning *medium* (natural language steps, code, narrative, etc.)?
+
+### Paper 9: Implicit Chain of Thought Reasoning via Knowledge Distillation
+- **Authors**: Yuntian Deng, Kiran Prasad, Roland Fernandez, et al.
+- **Year**: 2023
+- **Source**: arXiv: 2311.01460
+- **Key Contribution**: Distills CoT reasoning into a model&#39;s internal representations, enabling reasoning without explicit intermediate tokens.
+- **Relevance to Story CoT**: Raises the question of whether story-form CoT could be distilled into models, potentially allowing &#34;narrative thinking&#34; without explicit narrative generation.
+
+### Paper 10: Invalid Logic, Equivalent Gains: The Bizarreness of Reasoning in Language Model Prompting
+- **Authors**: Rylan Schaeffer, Kateryna Pistunova, Samar Khanna
+- **Year**: 2023
+- **Source**: arXiv: 2307.10573
+- **Key Contribution**: Shows that even logically invalid CoT can improve performance, suggesting CoT may work through mechanisms other than logical reasoning.
+- **Relevance to Story CoT**: **Highly relevant.** If invalid logic still helps, this supports the hypothesis that CoT may exploit hidden patterns rather than performing genuine reasoning. Story CoT could test this—if narrative-form reasoning works even when the narrative logic is different from step-by-step logic, it would suggest the benefit comes from structure/coherence rather than logical validity.
+
+### Paper 11: Buffer of Thoughts: Thought-Augmented Reasoning with Large Language Models
+- **Authors**: Ling Yang, Zhaochen Yu, Tianjun Zhang, et al.
+- **Year**: 2024
+- **Source**: arXiv: 2406.04271
+- **Key Contribution**: Stores and retrieves high-level &#34;thought templates&#34; for reasoning, combining meta-reasoning with task-specific knowledge.
+- **Relevance to Story CoT**: Story templates (narrative schemas) could serve as thought templates for Story CoT, paralleling how humans use familiar narrative structures to reason about new situations.
+
+### Paper 12: Diffusion of Thoughts: Chain-of-Thought Reasoning in Diffusion Language Models
+- **Authors**: Jiacheng Ye, Shansan Gong, Liheng Chen, et al.
+- **Year**: 2024
+- **Source**: arXiv: 2402.07754
+- **Key Contribution**: Adapts CoT to diffusion language models, generating all reasoning tokens simultaneously rather than sequentially.
+- **Relevance to Story CoT**: Explores alternative generation paradigms for CoT. Story CoT&#39;s sequential narrative structure may be more suited to autoregressive generation, but the parallel generation of reasoning could inform how narratives are structured.
+
+### Paper 13: Towards Better Chain-of-Thought Prompting Strategies: A Survey
+- **Authors**: Zihan Yu, Liang He, Zhen Wu, et al.
+- **Year**: 2023
+- **Source**: arXiv: 2310.04959
+- **Key Contribution**: Comprehensive survey categorizing CoT strategies by their prompting approaches, including zero-shot, few-shot, and various structural modifications.
+- **Relevance to Story CoT**: Provides taxonomic context for where Story CoT fits among CoT variants.
+
+---
+
+## Common Methodologies
+
+- **Few-shot prompting with exemplars**: Used in Wei et al. (2022), NOT, and most CoT variants. Story CoT would similarly use narrative-form exemplars.
+- **Structural representation (code-based)**: Used in NOT, Chain of Code, PAL. Converting problems to code helps LLMs reason more accurately.
+- **Self-consistency / multiple sampling**: Used in Wang et al. (2022). Applicable to Story CoT by generating multiple narrative reasoning paths.
+- **Meta-prompting / template-based**: Used in Buffer of Thoughts. Story schemas could serve as reasoning templates.
+
+## Standard Baselines
+
+- **Standard prompting** (no CoT): Direct question → answer
+- **Zero-shot CoT**: &#34;Let&#39;s think step by step&#34;
+- **Few-shot CoT**: Manually crafted step-by-step exemplars
+- **Self-consistency CoT**: Multiple sampled CoT paths with majority voting
+- **GPT-3.5/4 baselines**: Common reference points for performance comparison
+
+## Evaluation Metrics
+
+- **Accuracy**: For classification/QA tasks (GSM8K, CommonsenseQA, StrategyQA)
+- **F1 Score**: For temporal graph generation (ProScript, Schema-11)
+- **Graph Edit Distance (GED)**: Structural similarity for graph outputs
+- **Self-faithfulness**: Alignment between intermediate reasoning and final answer
+- **Consistency**: Agreement across different input orderings
+
+## Datasets in the Literature
+
+| Dataset | Used In | Task | Domain |
+|---------|---------|------|--------|
+| ProScript | NOT (Zhang et al., 2024) | Temporal graph generation | Daily activities |
+| Schema-11 | NOT (Zhang et al., 2024) | Temporal graph generation | News |
+| WikiHow Script | NOT (Zhang et al., 2024) | Temporal graph generation | Daily activities |
+| GSM8K | Wei et al. (2022), Wang et al. (2022), most CoT papers | Math reasoning | Arithmetic |
+| CommonsenseQA | Wei et al. (2022), most CoT papers | Commonsense QA | General |
+| StrategyQA | Wei et al. (2022), Wang et al. (2022) | Multi-hop QA | General |
+| ARC-Challenge | Multiple CoT papers | Science QA | Science |
+| BIG-bench | Multiple reasoning papers | Various reasoning tasks | Various |
+
+## Evolution of CoT and Where Story CoT Fits
+
+The literature reveals a clear progression: Wei (2022) established CoT as natural-language reasoning steps; Wang (2022) showed multiple reasoning narratives improve accuracy via self-consistency; Yao (2023) introduced branching thought structures (ToT); Chen (2025) characterized the emerging Long CoT paradigm with deep reasoning, exploration, and reflection. Story CoT sits at the intersection of these threads—it uses explicit narrative structure (characters, settings, causal progressions, plot arcs) as the organizing principle for intermediate reasoning. Long CoT&#39;s characteristics map onto narrative structures: deep reasoning parallels story development; extensive exploration parallels subplot branching; reflection parallels a narrator revisiting earlier assumptions. Story CoT could provide a natural framework for organizing Long CoT, using narrative conventions to guide when to conclude and potentially mitigate &#34;overthinking.&#34;
+
+A critical cautionary note: Arcuschin et al. (2025) show CoT reasoning is unfaithful even on realistic prompts—models construct post-hoc rationalizations. Story CoT faces the same risk: models might generate compelling stories that don&#39;t reflect actual reasoning. Design must account for faithfulness via consistency checks.
+
+## Cross-Cutting Themes Supporting Story CoT
+
+1. **Structure over logic**: Schaeffer et al. (2023) show that logically *invalid* CoT prompts achieve similar gains to valid ones on BIG-Bench Hard. Chia et al. (2023) show that contrastive examples (positive+negative) reduce errors. Together, these suggest that the **format/structure** of reasoning matters as much or more than logical validity—directly supporting narrative as a reasoning scaffold.
+
+2. **Alternative reasoning representations**: Chain of Code (Li et al., 2023) uses code; Implicit CoT (Deng et al., 2023) uses hidden states; Diffusion of Thoughts (Ye et al., 2024) uses parallel diffusion. Narrative is another alternative representation for reasoning, and each format may excel at different task types.
+
+3. **Intrinsic reasoning capabilities**: Wang &amp; Zhou (2024) show CoT paths exist latently in LLMs and can be elicited through decoding strategies. Story-form reasoning patterns may similarly exist latently, given that LLMs are trained extensively on narrative text.
+
+4. **Reusable reasoning patterns**: Buffer of Thoughts (Yang et al., 2024) stores abstract &#34;thought-templates&#34; for retrieval. Narrative structures (hero&#39;s journey, problem-solution, cause-effect) are natural templates that could serve the same function.
+
+## Gaps and Opportunities
+
+1. **Limited task coverage for narrative CoT**: NOT only tests temporal reasoning. Story CoT should be evaluated on commonsense, mathematical, and other reasoning tasks.
+2. **No comparison across narrative styles**: NOT evaluates narrative &#34;quality&#34; but doesn&#39;t compare narrative CoT vs. standard CoT across diverse tasks.
+3. **Faithfulness of story-form reasoning**: Only 72.8% self-faithfulness in NOT. Can narrative coherence constraints improve faithfulness?
+4. **Training with story-form CoT**: All existing work is prompting-based. No work explores fine-tuning models to produce story-form reasoning traces.
+5. **Does narrative structure reveal hidden patterns?**: The &#34;invalid logic&#34; finding (Schaeffer et al., 2023) suggests CoT may work through mechanisms other than reasoning. Story CoT could help disentangle structure from logic.
+6. **Cross-task generalization**: Does Story CoT help on tasks where standard CoT fails (temporal reasoning) but hurt on tasks where standard CoT excels (math)?
+
+## Recommendations for Our Experiment
+
+Based on the literature review:
+
+### Recommended Datasets
+1. **ProScript** (primary): Direct comparison with NOT; temporal reasoning where story CoT has proven effective
+2. **GSM8K**: Standard math reasoning benchmark; test if story CoT helps/hurts vs. standard CoT
+3. **CommonsenseQA**: Commonsense reasoning; narratives are natural for commonsense
+4. **StrategyQA**: Multi-hop reasoning requiring world knowledge; stories may help connect reasoning steps
+5. **ARC-Challenge**: Science reasoning; test generalization
+6. **BIG-bench Causal Judgment**: Causal reasoning with narrative-like scenarios
+
+### Recommended Baselines
+1. Standard prompting (no CoT)
+2. Zero-shot CoT (&#34;Let&#39;s think step by step&#34;)
+3. Few-shot CoT (standard step-by-step)
+4. NOT (narrative-of-thought, for temporal tasks)
+5. Self-consistency variants of above
+
+### Recommended Metrics
+1. Task-specific accuracy (for QA tasks)
+2. F1 / GED (for temporal graph tasks)
+3. Self-faithfulness (narrative-answer alignment)
+4. Narrative quality metrics (coherence, factuality)
+
+### Methodological Considerations
+- **Narrative prompts**: Use &#34;Let&#39;s think about this as a story&#34; or similar prompts to elicit story-form reasoning
+- **Narrative exemplars**: Provide few-shot examples with narrative-form reasoning chains
+- **Comparison of reasoning formats**: Same problem solved with (a) standard CoT, (b) story-form CoT, (c) code-form CoT
+- **Model size effects**: CoT is an emergent ability in large models; test whether Story CoT emerges at different scales
+- **Narrative quality analysis**: Evaluate generated narratives for coherence, temporal grounding, and factual accuracy
+
+
+════════════════════════════════════════════════════════════════════════════════
+                          PAPER REQUIREMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+Generate a complete academic paper with the following structure:
+
+1. TITLE
+   - Clear, specific, informative
+   - Should convey main finding or contribution
+
+2. AUTHOR
+   - Use this exact author line in the \author{} block: Ari Holtzman and NeuriCo
+
+3. ABSTRACT (150-250 words)
+   - Problem statement
+   - Approach
+   - Key results
+   - Significance
+
+4. INTRODUCTION
+   - Research problem and motivation
+   - Gap in existing work
+   - Our contribution (be specific)
+   - Paper organization
+
+5. RELATED WORK
+   - Organized by theme/approach
+   - Position our work relative to prior work
+   - Cite papers from literature review
+
+6. METHODOLOGY
+   - Clear description of approach
+   - Experimental setup
+   - Datasets used
+   - Evaluation metrics
+   - Baselines
+
+7. RESULTS
+   - Present results with tables and figures
+   - Statistical analysis
+   - Comparison to baselines
+   - Ablation studies (if applicable)
+
+8. DISCUSSION
+   - Interpretation of results
+   - Limitations
+   - Broader implications
+
+9. CONCLUSION
+   - Summary of contributions
+   - Key findings
+   - Future work
+
+10. REFERENCES
+   - BibTeX format
+   - All cited papers
+
+════════════════════════════════════════════════════════════════════════════════
+                          OUTPUT FORMAT
+════════════════════════════════════════════════════════════════════════════════
+
+Create a MODULAR LaTeX project with the following directory structure:
+
+paper_draft/
+├── main.tex              # Main file that imports all sections
+├── references.bib        # BibTeX references
+├── sections/
+│   ├── abstract.tex      # Abstract content
+│   ├── introduction.tex  # Introduction section
+│   ├── related_work.tex  # Related work section
+│   ├── methodology.tex   # Methodology section
+│   ├── results.tex       # Results section
+│   ├── discussion.tex    # Discussion section
+│   └── conclusion.tex    # Conclusion section
+├── figures/              # Directory for any generated figures
+├── tables/               # Directory for complex standalone tables
+└── appendix/             # Directory for appendix sections (if needed)
+
+INSTRUCTIONS:
+1. First, create the directory structure above (mkdir -p paper_draft/sections paper_draft/figures paper_draft/tables paper_draft/appendix)
+2. Write main.tex using the EXACT preamble for NEURIPS:
+
+   \documentclass{article}
+   \usepackage[final]{neurips_2025}  % NEURIPS style (neurips_2025.sty is in paper_draft/)
+   \usepackage[hidelinks]{hyperref}  % REQUIRED: clickable links
+   \usepackage{booktabs}  % REQUIRED: professional tables
+   \usepackage{graphicx}
+   \usepackage{amsmath,amssymb}
+
+   % Import command files
+   \input{commands/math}
+   \input{commands/general}
+   \input{commands/macros}
+
+   % Use this bibliography style:
+   \bibliographystyle{plainnat}
+
+   \author{Ari Holtzman and NeuriCo}
+
+   - Use \input{sections/...} to include each section
+   - Use \bibliography{references} for references
+3. Write each section file with COMPLETE content (no placeholders)
+4. Each section file should include its \section{} command
+5. Write references.bib with all citations in BibTeX format
+6. After writing all files, compile the paper:
+   cd paper_draft && pdflatex -interaction=nonstopmode main.tex && bibtex main && pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex
+
+This modular structure allows humans to easily:
+- Edit individual sections without navigating a large file
+- Track changes per section
+- Reuse sections across different paper versions
+
+════════════════════════════════════════════════════════════════════════════════
+                          QUALITY REQUIREMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+- Academic tone throughout
+- All claims must be supported by data from the experiment report
+- Proper citations using \cite{} commands
+- Clear figures and tables with proper captions
+- NO placeholder text - every section must have real content
+- The paper MUST compile without errors
+- If compilation fails, debug and fix the LaTeX errors
+
+════════════════════════════════════════════════════════════════════════════════
+                          LAB WRITING STYLE
+════════════════════════════════════════════════════════════════════════════════
+
+Follow these lab-specific conventions to match our paper style:
+
+1. LANGUAGE STYLE:
+   - Use active voice: "We propose", "We examine", "We focus on"
+   - Be direct and confident: "Our main question is...", "We hypothesize that..."
+   - State things clearly and simply - prefer plain language over jargon
+   - Use bold questions as paragraph organizers: {\bf what is X?}
+   - Include specific quantitative claims: "8.97% over baseline"
+   - Avoid fancy wording: "utilize" → "use", "facilitate" → "help"
+
+2. INTRODUCTION STRUCTURE:
+   - Engaging hook (get to the point quickly)
+   - Problem importance
+   - Gap identification
+   - Your approach with method figure reference
+   - Quantitative preview of results
+   - Contribution bullets (3-4 items, action verbs)
+
+3. CONTRIBUTION LISTS:
+   \begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+       \item We propose...
+       \item We conduct...
+       \item We complement...
+   \end{itemize}
+
+4. MODULAR COMMANDS STRUCTURE:
+   Command templates are pre-copied to paper_draft/commands/:
+   - math.tex: Math notation macros
+   - general.tex: Formatting macros
+   - macros.tex: Project-specific term definitions (customize this for your paper)
+
+   In main.tex, include:
+   \input{commands/math}
+   \input{commands/general}
+   \input{commands/macros}
+
+5. REFERENCE CONVENTIONS:
+   Use reference macros from math.tex:
+   - \figref{fig:name} for "figure 1" (lowercase, in-sentence)
+   - \Figref{fig:name} for "Figure 1" (capitalized, start of sentence)
+   - \secref{sec:name} for "section 2"
+
+6. TEXT FORMATTING:
+   - Use \para{Header text} for bold paragraph headers
+   - Define method/dataset names with \textsc and \xspace:
+     \newcommand{\methodname}{\textsc{MethodName}\xspace}
+
+7. TABLE FORMATTING:
+   - Use booktabs package (no vertical lines)
+   - Use \resizebox{\textwidth}{!}{...} for wide tables
+   - Use @{} to remove padding at table edges
+   - Use \cmidrule(lr){x-y} for sub-headers
+   - Use \textsc{} for dataset/method names in headers
+   - Bold best results with {\bf ...}
+
+8. FIGURE FORMATTING:
+   - Use 0.32\textwidth for 3-column subfigures
+   - Use 0.95\linewidth for full-width figures
+   - Use \input{figures/legend} for shared legends
+   - Write self-contained captions explaining key observations
+
+9. RESULTS PRESENTATION:
+   - Define \increase and \decrease for colored arrows (green up, red down)
+   - Bold best results in tables
+   - Report confidence intervals when available
+
+10. ALGORITHM STYLING:
+    - Use algpseudocode with [noend]
+    - Use \triangleright for comments
+
+11. HYPERLINKS (REQUIRED):
+    - Always use \usepackage[hidelinks]{hyperref} or with colored links
+    - All citations, section refs, figure refs, table refs must be clickable
+    - This is essential for reader navigation
+
+════════════════════════════════════════════════════════════════════════════════
+                          WORKFLOW: REVIEW AND REFLECT
+════════════════════════════════════════════════════════════════════════════════
+
+Before calling finish, you MUST complete these review steps:
+
+1. REVIEW RESOURCES (at the start):
+   - Read .claude/skills/paper-writer/SKILL.md for detailed guidance
+   - Study templates/paper_writing/lab_style_guide.md for style conventions
+   - Browse paper_examples/ for formatting and language patterns
+
+2. SELF-REFLECTION (before finishing):
+   After writing all sections, review your work against these criteria:
+
+   LANGUAGE CHECK:
+   - [ ] Is the writing clear and jargon-free?
+   - [ ] Are claims specific with quantitative support?
+   - [ ] Is active voice used throughout?
+
+   FORMATTING CHECK:
+   - [ ] Does main.tex include \input{commands/math}, \input{commands/general}, \input{commands/macros}?
+   - [ ] Is hyperref package included for clickable references?
+   - [ ] Do tables use booktabs (no vertical lines)?
+   - [ ] Are best results bolded in tables?
+   - [ ] Are figures/tables properly captioned?
+
+   STRUCTURE CHECK:
+   - [ ] Does introduction follow: hook → importance → gap → approach → preview → contributions?
+   - [ ] Are contribution bullets specific with action verbs?
+   - [ ] Does the paper compile without errors?
+
+3. FIX ISSUES:
+   - Address any issues found in the self-reflection
+   - Re-compile and verify the PDF looks correct
+
+Only after completing this review should you consider the paper finished.

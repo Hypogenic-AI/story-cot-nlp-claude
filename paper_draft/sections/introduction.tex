@@ -1,0 +1,20 @@
+\section{Introduction}
+\label{sec:intro}
+
+When humans reason about complex problems, they rarely enumerate numbered steps on a mental whiteboard. Instead, they often construct narratives: a student imagines a shopkeeper making change to solve an arithmetic problem; an engineer mentally simulates a bridge under load to predict failure modes. This narrative mode of reasoning---building stories with characters, settings, and causal progressions---is well-documented in cognitive science \citep{bruner1991narrative} and stands in contrast to the formulaic step-by-step decomposition that has become the default in \chainofthought prompting for large language models \citep{wei2022chain}.
+
+\para{The appeal of narrative reasoning.} \chainofthought prompting dramatically improves LLM performance on tasks requiring multi-step reasoning \citep{wei2022chain, wang2023selfconsistency}. Yet the standard format---``Step 1: \ldots Step 2: \ldots''---is only one of many possible reasoning structures. Recent work on Narrative-of-Thought \citep{zhang2024narrative} demonstrated that prompting LLMs to reason through temporally grounded narratives yields 16--71\% F1 improvements over standard prompting on temporal graph generation tasks. This raises a natural question: does narrative-form CoT generalize to other reasoning domains?
+
+\para{Our main question.} {\bf Does prompting LLMs to reason in story form improve, match, or degrade performance compared to standard step-by-step CoT?} If narrative structure activates different model capabilities---perhaps leveraging the vast narrative text in LLM training corpora---it could unlock improvements across diverse tasks. Alternatively, if the benefit of CoT is purely computational scaffolding \citep{schaeffer2023invalid}, then format should not matter.
+
+\para{What we do.} We introduce \storycot, a prompting strategy in which few-shot exemplars wrap identical logical steps inside vivid narratives with characters, settings, and temporal progression. We systematically compare four prompting strategies---\directprompt, \zeroshotcot, \fewshotcot, and \storycot---across four benchmarks spanning math (\gsm), commonsense (\csqa), multi-hop (\strategyqa), and science (\arc) reasoning, all using \gptfour.
+
+\para{What we find.} \storycot performs equivalently to \fewshotcot across all four domains. Accuracy differences range from 0 to 1.3 percentage points, and none reach statistical significance (McNemar's test, all $p > 0.47$). Both structured methods dramatically outperform \directprompt on multi-step tasks (+36 pp on \gsm, +19 pp on \arc). This null result is itself informative: it suggests that for state-of-the-art LLMs, \chainofthought benefits arise from the \emph{presence} of intermediate reasoning tokens, not from their format.
+
+Our contributions are:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+\item We conduct the first systematic comparison of narrative-form \chainofthought against standard \chainofthought across four diverse reasoning benchmarks, finding format equivalence on all tasks.
+\item We provide evidence for the \emph{computational scaffolding hypothesis}: CoT improves LLM reasoning through intermediate computation, independent of whether that computation takes the form of logical steps or narrative prose.
+\item We show that \zeroshotcot can \emph{harm} performance on commonsense reasoning (--14 pp on \csqa), highlighting that the structure of CoT prompts matters even when their format does not.
+\item We release our prompts, evaluation code, and full results to support future work on alternative reasoning formats.
+\end{itemize}

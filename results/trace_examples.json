@@ -1,0 +1,193 @@
+{
+  "gsm8k": {
+    "story_wins": 3,
+    "cot_wins": 3,
+    "story_win_examples": [
+      {
+        "question": "Twenty dozen cups cost $1200 less than the total cost of half a dozen plates sold at $6000 each. Calculate the total cost of buying each cup.",
+        "gold": "145",
+        "story_pred": "145",
+        "cot_pred": "70",
+        "story_trace": "Let\u2019s imagine a bustling restaurant supply store. A customer is shopping for cups and plates. First, they look at plates: each plate is quite fancy and costs $6000. They decide to buy half a dozen plates, which is 6 plates. The total cost for the plates is 6 \u00d7 $6000 = $36,000.\n\nNow, the customer turns to cups. They want to buy twenty dozen cups. Since a dozen is 12, twenty dozen is 20 \u00d7 12 = 240 cups.\n\nThe store manager tells them that the total cost for all these cups is $1200 less than what th",
+        "cot_trace": "Reasoning:  \nStep 1: Find the total cost of half a dozen plates.  \n- Half a dozen = 6 \u00f7 2 = 3 plates.  \n- Each plate costs $6000.  \n- Total cost for plates = 3 \u00d7 $6000 = $18,000.\n\nStep 2: The cost of twenty dozen cups is $1200 less than $18,000.  \n- Cost of cups = $18,000 - $1200 = $16,800.\n\nStep 3: Find the total number of cups.  \n- One dozen = 12 cups.  \n- Twenty dozen = 20 \u00d7 12 = 240 cups.\n\nStep 4: Find the cost per cup.  \n- Cost per cup = Total cost of cups \u00f7 Number of cups  \n- Cost per cup "
+      },
+      {
+        "question": "Students in class 3B are collecting school points for behavior. If they get enough points in total, they can go on a trip. In the class, there are Adam, Martha, Betty, and Tom. Adam has collected 50 p",
+        "gold": "145",
+        "story_pred": "145",
+        "cot_pred": "110",
+        "story_trace": "Let\u2019s imagine the classroom of 3B, where four students\u2014Adam, Martha, Betty, and Tom\u2014are excitedly tracking their points on a big poster. Each student\u2019s points are written in bright colors.\n\nFirst, Adam\u2019s total is easy: he has 50 points.\n\nBetty did even better. She collected 30% more than Adam. So, the class gathers around as Betty\u2019s total is calculated:\n- 30% of Adam\u2019s 50 points is 0.3 \u00d7 50 = 15.\n- So Betty has 50 + 15 = 65 points.\n\nTom, however, didn\u2019t do as well as Betty. He has 30 points less",
+        "cot_trace": "Let's break down the problem step by step:\n\n**Step 1: Adam's points**\n- Adam has collected 50 points.\n\n**Step 2: Betty's points**\n- Betty collected 30% more than Adam.\n- 30% of 50 = 0.3 \u00d7 50 = 15\n- Betty's points = 50 + 15 = 65\n\n**Step 3: Tom's points**\n- Tom has 30 points less than Betty.\n- Tom's points = 65 - 30 = 35\n\n**Step 4: Marta's points**\n- Marta collected 3 times more points than Tom.\n- \"3 times more\" than Tom means Marta has Tom's points plus 3 times Tom's points:  \n  Marta's points = "
+      },
+      {
+        "question": "Steve decides to start eating more tomatoes and decides to grows his own cherry tomatoes.  He eats twice as much as his girlfriend.  He eats 6 per day.  If a vine can produce 3 tomatoes per week how m",
+        "gold": "21",
+        "story_pred": "21",
+        "cot_pred": "14",
+        "story_trace": "Let\u2019s imagine Steve and his girlfriend sitting at their kitchen table, planning their healthy eating. Steve is determined\u2014he wants to eat twice as many cherry tomatoes as his girlfriend. He munches on 6 tomatoes every day, while his girlfriend eats half that, which is 3 per day.\n\nTogether, they eat 6 + 3 = 9 tomatoes per day.\n\nNow, let\u2019s think about a week. Each day, they eat 9 tomatoes, so in a week (7 days), they\u2019ll eat 9 \u00d7 7 = 63 tomatoes.\n\nSteve wants to grow enough vines so that he and his ",
+        "cot_trace": "Step 1: Steve eats 6 cherry tomatoes per day.  \nStep 2: There are 7 days in a week, so he eats 6 \u00d7 7 = 42 tomatoes per week.  \nStep 3: Each vine produces 3 tomatoes per week.  \nStep 4: To find the number of vines needed, divide the total tomatoes needed per week by the number each vine produces: 42 \u00f7 3 = 14 vines.  \n#### 14"
+      }
+    ],
+    "cot_win_examples": [
+      {
+        "question": "A marketing company pays its employees on a commission-based salary system. If you sell goods worth $1000, you earn a 30% commission. Sales over $1000 get you an additional 10% commission. Calculate t",
+        "gold": "450",
+        "story_pred": "900",
+        "cot_pred": "450",
+        "story_trace": "Let\u2019s imagine Antonella at her desk, phone in hand, working hard to close deals. By the end of the week, she\u2019s sold $2,500 worth of goods. Her company\u2019s commission system works like this: for the first $1,000 in sales, she earns 30%. For any sales above $1,000, she gets an extra 10%, making it a 40% commission on that portion.\n\nFirst, Antonella calculates her commission for the first $1,000:\n- 30% of $1,000 is $300.\n\nNext, she looks at the remaining sales above $1,000:\n- $2,500 total sales minus",
+        "cot_trace": "Step 1: Antonella sold goods worth $2500.\n\nStep 2: For the first $1000, she earns a 30% commission.\n- 30% of $1000 = 0.30 \u00d7 $1000 = $300\n\nStep 3: For the amount over $1000, which is $2500 - $1000 = $1500, she earns an additional 10% commission.\n- 10% of $1500 = 0.10 \u00d7 $1500 = $150\n\nStep 4: Total commission earned = $300 (from first $1000) + $150 (from next $1500) = $450\n\n#### 450"
+      },
+      {
+        "question": "Abraham owns 80 square meters of unused land. He sold half of the land for $50, and after a month, he sold another 1/4 of his land for $30. He then sold the remaining land for $3 per square meter. How",
+        "gold": "170",
+        "story_pred": "140",
+        "cot_pred": "170",
+        "story_trace": "Let\u2019s imagine Abraham standing on his 80 square meters of empty land, thinking about how to sell it off in pieces.\n\nFirst, he decides to sell half of it. Half of 80 is 40 square meters. He finds a buyer who pays him $50 for these 40 square meters. Now, Abraham has 40 square meters left.\n\nA month later, he sells another 1/4 of his original land. 1/4 of 80 is 20 square meters. He sells these 20 square meters for $30. Now, he has 40 - 20 = 20 square meters left.\n\nFinally, he decides to sell the rem",
+        "cot_trace": "Step 1: Abraham starts with 80 square meters of land.\n\nStep 2: He sells half of the land:\n- Half of 80 = 80 \u00f7 2 = 40 square meters.\n- He sells these 40 square meters for $50.\n\nStep 3: He has 80 - 40 = 40 square meters left.\n\nStep 4: He sells another 1/4 of his land (of the remaining 40 square meters):\n- 1/4 of 40 = 40 \u00f7 4 = 10 square meters.\n- He sells these 10 square meters for $30.\n\nStep 5: He has 40 - 10 = 30 square meters left.\n\nStep 6: He sells the remaining 30 square meters for $3 per squa"
+      },
+      {
+        "question": "A customer\u2019s loyalty card at a store gives them rewards of $1 off their next purchase for every $20 they spend. Their last shopping trip, they spent $80. This shopping trip, they spent $43, used their",
+        "gold": "31",
+        "story_pred": "35",
+        "cot_pred": "31",
+        "story_trace": "Let\u2019s imagine the customer\u2019s journey:\n\nLast time, they spent $80 at the store. For every $20 spent, they earn $1 in rewards. So, picture the cashier handing them a loyalty card and stamping it once for every $20. That\u2019s $80 \u00f7 $20 = 4 stamps, so they have $4 in rewards.\n\nThis shopping trip, the customer fills their cart and the total comes to $43. At checkout, they hand over their loyalty card with $4 in rewards. But today, they also have a special coupon that doubles the value of their rewards. ",
+        "cot_trace": "Step 1: Calculate rewards earned from the last shopping trip.  \n- For every $20 spent, $1 reward is earned.  \n- Last trip: $80 spent.  \n- Rewards earned = $80 \u00f7 $20 = 4 rewards ($4 off).\n\nStep 2: Calculate the value of the coupon.  \n- The coupon takes off twice the amount of rewards.  \n- Rewards = $4, so coupon = 2 \u00d7 $4 = $8 off.\n\nStep 3: Calculate total discounts applied to this shopping trip.  \n- Rewards used: $4  \n- Coupon: $8  \n- Total discount = $4 + $8 = $12\n\nStep 4: Subtract the total dis"
+      }
+    ]
+  },
+  "commonsenseqa": {
+    "story_wins": 6,
+    "cot_wins": 4,
+    "story_win_examples": [
+      {
+        "question": "Copulating with the wrong partner may be ill advised, many diseases can be transferred that can cause different types of what?",
+        "gold": "E",
+        "story_pred": "E",
+        "cot_pred": "C",
+        "story_trace": "Story reasoning: Imagine someone engaging in sexual activity with a partner whose health status they don't know. Later, they notice something unusual on their skin\u2014maybe a rash, itching, or sores. They visit a doctor, who explains that many sexually transmitted diseases can cause skin problems, such as irritation, bumps, or rashes. This is a common consequence of contracting certain diseases through copulation with the wrong partner.\n\nAnswer: E",
+        "cot_trace": "Step 1: The question discusses the risks of copulating (having sex) with the wrong partner, specifically mentioning the transfer of diseases.\nStep 2: Sexually transmitted diseases (STDs) can cause various symptoms and health issues.\nStep 3: Among the answer choices, \"skin irritation\" is a common symptom of several sexually transmitted diseases.\nStep 4: The other options (intense pleasure, ejaculation, period of rest, enjoyment) are not negative consequences or symptoms of disease.\nStep 5: Theref"
+      },
+      {
+        "question": "How might releasing energy that has built up feel?",
+        "gold": "B",
+        "story_pred": "B",
+        "cot_pred": "D",
+        "story_trace": "Imagine someone who has been feeling tense and stressed all week, maybe from work or personal issues. The pressure keeps building inside, like a balloon being filled with air. Finally, they go for a run, have a good cry, or talk things out with a friend. As the energy is released, they feel a rush of relief and maybe even joy. The tension melts away, replaced by a sense of lightness and pleasure. Releasing built-up energy often feels wonderful.\n\nAnswer: B",
+        "cot_trace": "Step 1: Releasing built-up energy refers to letting go of tension or pressure that has accumulated.\nStep 2: The feeling after releasing such energy can be physical, emotional, or psychological.\nStep 3: \"Damage\" and \"lazy\" do not describe a feeling of release.\nStep 4: \"Exhaustion\" could occur after release, but it is not the feeling of the release itself.\nStep 5: \"Wonderful\" is a general positive feeling, but not specific to the act of releasing energy.\nStep 6: \"Orgasm\" is a specific example of r"
+      },
+      {
+        "question": "Where would you go to get some pamphlets if you want to own them?",
+        "gold": "A",
+        "story_pred": "A",
+        "cot_pred": "C",
+        "story_trace": "Imagine you want to collect some pamphlets\u2014maybe about health, travel, or local events\u2014and you want to keep them for yourself. You could check your mailbox, but you only get what\u2019s sent to you. A drawer might have some, but only if you already own them. The library has pamphlets, but usually you have to return what you take. The health department gives out pamphlets, but they\u2019re usually about health topics, and you might not want only those. But at a bookstore, you can browse a variety of pamphl",
+        "cot_trace": "Step 1: The question asks where you would go to get pamphlets if you want to own them, meaning you want to keep them.\nStep 2: Bookstores sell books and sometimes pamphlets, but pamphlets are usually free informational materials.\nStep 3: A drawer is a place to store things, not to get new pamphlets.\nStep 4: The health department often provides free pamphlets to the public about health topics, and you can keep them.\nStep 5: A mailbox is where you receive mail, but you don't go there to get pamphle"
+      }
+    ],
+    "cot_win_examples": [
+      {
+        "question": "What kind of place has a leader?",
+        "gold": "D",
+        "story_pred": "E",
+        "cot_pred": "D",
+        "story_trace": "Let\u2019s imagine different scenarios. In an army, there\u2019s always a commanding officer giving orders. In a battle, there might be leaders on both sides directing troops. Wildlife doesn\u2019t have a formal leader, though some animal groups have alphas. A country has a president, king, or prime minister\u2014someone who leads the nation. An organization, like a company or club, also has a leader such as a CEO or president. Both a country and an organization are defined by having a structured leadership, but th",
+        "cot_trace": "Step 1: The question asks for a \"place\" that has a leader.\nStep 2: Let's consider each option:\n- (A) army: An army is an organized group and has leaders (generals, commanders).\n- (B) battle: A battle is an event, not a place, though it involves leaders.\n- (C) wildlife: Wildlife refers to animals in nature, not typically organized under a leader.\n- (D) country: A country is a place and has a leader (president, king, etc.).\n- (E) organization: An organization is a group or entity, not strictly a p"
+      },
+      {
+        "question": "What would you put coins into to make it work?",
+        "gold": "B",
+        "story_pred": "E",
+        "cot_pred": "B",
+        "story_trace": "Imagine you\u2019re out in the city and you need to make a phone call or buy a snack from a vending machine. You reach into your pocket for some coins, because these machines only work when you insert money. You drop the coins into a slot, and suddenly the machine comes to life\u2014maybe it dispenses a soda, or lets you make a call. None of the other options\u2014like a stove, water fountain, desk, purse, or jar\u2014require coins to function. Only a machine that operates when you put coins in will work this way.\n",
+        "cot_trace": "Step 1: The question asks for something that requires coins to function.\nStep 2: A stove, desk, purse, and jar do not require coins to work; they are used for other purposes (cooking, working, holding money, or storing items).\nStep 3: A water fountain in public places sometimes requires coins to operate, especially older models or vending-style water fountains.\nStep 4: Of the options, the water fountain is the only one that could require coins to work.\nAnswer: B"
+      },
+      {
+        "question": "James was looking for a good place to buy farmland.  Where might he look?",
+        "gold": "A",
+        "story_pred": "B",
+        "cot_pred": "A",
+        "story_trace": "Let\u2019s imagine James is dreaming of owning his own farm. He wants wide open spaces, fertile soil, and land that\u2019s already being used for agriculture. He wouldn\u2019t look in a city or a suburban neighborhood. Instead, he\u2019d drive out past the city limits, where the landscape opens up into rolling fields and pastures. This is the countryside\u2014an area outside towns and cities, known for its rural character and farmland. While the Midwest and Illinois are specific places famous for farming, and \"farming a",
+        "cot_trace": "Step 1: James wants to buy farmland, so he needs to look in places known for agriculture.\nStep 2: The \"midwest\" is a region in the United States famous for its vast farmland.\nStep 3: \"Countryside\" is a general term for rural areas, which often have farmland.\nStep 4: \"Estate\" refers to a large property, but not necessarily farmland.\nStep 5: \"Farming areas\" is a general term for places where farming occurs.\nStep 6: \"Illinois\" is a state in the Midwest known for farming.\nStep 7: The best answer is "
+      }
+    ]
+  },
+  "arc_challenge": {
+    "story_wins": 2,
+    "cot_wins": 0,
+    "story_win_examples": [
+      {
+        "question": "If HCl is added to Zn, what would be an expected product?",
+        "gold": "D",
+        "story_pred": "D",
+        "cot_pred": "C",
+        "story_trace": "Imagine a chemistry lab where a student is adding hydrochloric acid (HCl) to a piece of zinc metal (Zn). As soon as the acid touches the zinc, bubbles start to form\u2014this is hydrogen gas being released. The zinc is dissolving, and a new compound is forming in the solution. The reaction is:\n\nZn (s) + 2 HCl (aq) \u2192 ZnCl\u2082 (aq) + H\u2082 (g)\n\nThe zinc combines with the chloride ions from the acid to make zinc chloride (ZnCl\u2082), and hydrogen gas (H\u2082) is released. The correct product among the choices is ZnCl",
+        "cot_trace": "Step 1: HCl is hydrochloric acid, and Zn is zinc metal.\nStep 2: When zinc reacts with hydrochloric acid, it displaces hydrogen from the acid.\nStep 3: The products are zinc chloride (ZnCl\u2082) and hydrogen gas (H\u2082).\nStep 4: Among the answer choices, ZnCl\u2082 matches the expected ionic compound formed.\nStep 5: The answer is ZnCl\u2082.\nAnswer: D"
+      },
+      {
+        "question": "Beavers build their homes in ponds and streams. Which characteristic is least critical to building homes in an aquatic environment?",
+        "gold": "C",
+        "story_pred": "C",
+        "cot_pred": "D",
+        "story_trace": "Imagine a beaver preparing to build its lodge in a pond. It dives into the water, its waterproof fur keeping it warm and dry. Its webbed hind feet help it swim powerfully, and its flat, wide tail acts as a rudder and helps with balance. But when it comes time to actually build the lodge, the beaver uses its large, sharp teeth to cut down trees and branches. While all these features are helpful, the large, sharp teeth are most important for cutting wood, not specifically for living in water. The ",
+        "cot_trace": "Step 1: Beavers live in water, so waterproof fur helps keep them dry and warm\u2014this is important.\nStep 2: Webbed hind feet help them swim efficiently in water\u2014this is also important.\nStep 3: Large, sharp teeth are used for cutting wood to build their homes\u2014this is important for construction.\nStep 4: A flat, wide tail helps with swimming and balance, but is less directly related to the actual building of homes compared to teeth.\nStep 5: Of all the options, the flat, wide tail is least critical spe"
+      }
+    ],
+    "cot_win_examples": []
+  },
+  "strategyqa": {
+    "story_wins": 5,
+    "cot_wins": 7,
+    "story_win_examples": [
+      {
+        "question": "Did the band Led Zeppelin own a prime number of gilded gramophones?",
+        "gold": "Yes",
+        "story_pred": "Yes",
+        "cot_pred": "No",
+        "story_trace": "Story reasoning: Picture the members of Led Zeppelin gathered in a lavish room, admiring their collection of gilded gramophones\u2014Grammy Awards. But as you look closer, you realize something odd: despite their legendary status, Led Zeppelin was famously snubbed by the Grammys during their active years. They didn't win any competitive Grammy Awards while the band was together. Decades later, they received a Lifetime Achievement Award, but that's just one, and not a competitive win. So, counting the",
+        "cot_trace": "Step 1: \"Gilded gramophones\" refers to Grammy Awards, which are shaped like gramophones.\nStep 2: Led Zeppelin is a famous rock band from the 1970s.\nStep 3: Led Zeppelin was nominated for several Grammy Awards but did not win any during their active years.\nStep 4: Therefore, the number of Grammy Awards (gilded gramophones) they owned is zero.\nStep 5: Zero is not a prime number.\nAnswer: No"
+      },
+      {
+        "question": "Do Windows or Android smartphones run newer versions of Linux?",
+        "gold": "No",
+        "story_pred": "No",
+        "cot_pred": "Yes",
+        "story_trace": "Story reasoning: Picture a tech enthusiast comparing her devices. She has a Windows laptop, an Android phone, and a Linux desktop. She checks the Windows laptop\u2014it's running Windows 11, which is based on Microsoft's own NT kernel, not Linux. Her Android phone, however, is powered by the Android OS, which is built on top of the Linux kernel, though it's often a customized and sometimes older version. She updates her Linux desktop and sees it's running the latest Linux kernel, much newer than the ",
+        "cot_trace": "Step 1: Windows smartphones run the Windows operating system, not Linux.\nStep 2: Android smartphones run the Android operating system, which is based on the Linux kernel.\nStep 3: The Linux kernel in Android smartphones is regularly updated, though it may not always be the very latest version compared to desktop Linux distributions.\nStep 4: Windows smartphones do not run Linux at all, while Android smartphones run a version of the Linux kernel.\nStep 5: Therefore, Android smartphones run newer ver"
+      },
+      {
+        "question": "Could a firewall be destroyed by a hammer?",
+        "gold": "No",
+        "story_pred": "No",
+        "cot_pred": "Yes",
+        "story_trace": "Imagine a frustrated office worker standing in front of a computer, angry at being blocked from a website by the company's firewall. He grabs a hammer and smashes it against the computer monitor, but the firewall isn't a physical barrier\u2014it's software running on a server or network device, invisible and intangible. No matter how hard he swings the hammer, he can't touch the firewall itself. The only way to \"destroy\" a firewall is by disabling or deleting the software, not by physical force.\n\nAns",
+        "cot_trace": "Step 1: The term \"firewall\" can refer to either a physical barrier in buildings/vehicles or a software security system in computers.\nStep 2: If referring to a physical firewall (e.g., in a car or building), it is usually made of metal or fire-resistant materials.\nStep 3: A hammer could potentially damage or destroy a physical firewall, depending on its material and thickness.\nStep 4: If referring to a software firewall, it is not a physical object and cannot be destroyed by a hammer.\nStep 5: The"
+      }
+    ],
+    "cot_win_examples": [
+      {
+        "question": "Does the name C-SPAN refer to a form of telecommunications that utilizes outer space?",
+        "gold": "Yes",
+        "story_pred": "No",
+        "cot_pred": "Yes",
+        "story_trace": "Story reasoning: Imagine a group of journalists in Washington, D.C., setting up cameras in the halls of Congress. They\u2019re preparing to broadcast live government proceedings to the public. The channel they work for is called C-SPAN, which stands for Cable-Satellite Public Affairs Network. While the name includes \"satellite,\" it refers to the way the channel is distributed\u2014using cable and satellite TV technology to reach viewers. However, the main focus of C-SPAN is on public affairs programming, ",
+        "cot_trace": "Step 1: C-SPAN stands for \"Cable-Satellite Public Affairs Network.\"\nStep 2: The name includes \"Satellite,\" which is a form of telecommunications that utilizes outer space.\nStep 3: However, C-SPAN itself is a television network, not a technology.\nStep 4: The name refers to the use of cable and satellite technology for broadcasting.\nStep 5: Satellite telecommunications do utilize outer space.\nStep 6: Therefore, the name C-SPAN does refer, in part, to a form of telecommunications that utilizes oute"
+      },
+      {
+        "question": "Was Florence a Theocracy during Italian Renaissance?",
+        "gold": "Yes",
+        "story_pred": "No",
+        "cot_pred": "Yes",
+        "story_trace": "Story reasoning: Picture Florence during the Italian Renaissance\u2014a bustling city of artists, merchants, and thinkers. The Medici family, wealthy bankers, hold the real power, patronizing artists like Michelangelo and Leonardo da Vinci. The city is filled with churches and religious art, but the government is run by secular leaders, not priests. For a brief period, the fiery preacher Savonarola takes control and imposes strict religious laws, but his rule is short-lived and ends with his executio",
+        "cot_trace": "Step 1: A theocracy is a form of government in which religious leaders rule in the name of a deity.\nStep 2: During most of the Italian Renaissance, Florence was a republic governed by wealthy families, especially the Medici.\nStep 3: However, from 1494 to 1498, Florence was ruled by Girolamo Savonarola, a Dominican friar, who established a government based on religious principles.\nStep 4: During Savonarola's rule, Florence functioned as a theocracy.\nStep 5: Outside of Savonarola's period, Florenc"
+      },
+      {
+        "question": "Is it dark is Basel during the day in Los Angeles?",
+        "gold": "Yes",
+        "story_pred": "No",
+        "cot_pred": "Yes",
+        "story_trace": "Story reasoning: Imagine a traveler in Los Angeles calling her friend in Basel, Switzerland, during the middle of the day in LA. Sunlight streams through her window as she dials. In Basel, her friend glances outside\u2014it's evening, but the sun is just setting, or perhaps it's already night, depending on the time of year. However, during the daytime in Los Angeles, it's always at least morning, afternoon, or early evening in Basel, because Basel is ahead in time by about 9 hours. Unless there's an ",
+        "cot_trace": "Step 1: Basel is in Switzerland, which is in the Central European Time (CET) zone.\nStep 2: Los Angeles is in the Pacific Time (PT) zone, which is 9 hours behind Basel.\nStep 3: When it is daytime in Los Angeles, it is evening or night in Basel, depending on the exact time.\nStep 4: For example, if it is 12:00 PM (noon) in Los Angeles, it is 9:00 PM in Basel, which is after sunset for much of the year.\nStep 5: Therefore, during the day in Los Angeles, it is often dark in Basel.\nAnswer: Yes"
+      }
+    ]
+  }
+}

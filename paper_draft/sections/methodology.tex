@@ -1,0 +1,57 @@
+\section{Methodology}
+\label{sec:method}
+
+We compare four prompting strategies on four reasoning benchmarks using a single state-of-the-art LLM, holding all other variables constant to isolate the effect of reasoning format.
+
+\subsection{Prompting Strategies}
+\label{sec:prompts}
+
+We evaluate four prompting strategies, ordered by the amount of structure they provide:
+
+\para{\directprompt.} The model receives only the question and is asked to produce an answer immediately, with no reasoning.
+
+\para{\zeroshotcot.} The model receives the question followed by ``Let's think step by step'' \citep{kojima2022large}, with no exemplars.
+
+\para{\fewshotcot.} The model receives three exemplars, each demonstrating standard step-by-step reasoning (``Step 1: \ldots\ Step 2: \ldots''), followed by the target question.
+
+\para{\storycot.} The model receives three exemplars in which the \emph{same logical steps} are embedded within a vivid narrative featuring characters, settings, and temporal progression, followed by the target question. For example, a \gsm exemplar that reads ``Step 1: We start with 15 trees. Step 2: After planting, there are 21 trees. Step 3: The number planted is $21 - 15 = 6$'' in the \fewshotcot condition becomes:
+
+\begin{quote}
+\small
+\emph{Imagine a grove at dawn with 15 trees standing tall. A team of workers arrives with saplings on a truck. They spend the morning digging holes and carefully planting new trees among the existing ones. By sunset, someone walks through and counts every tree---there are now 21 in total. The original 15 haven't changed, so the workers must have added $21 - 15 = 6$ new trees during their day's work.}
+\end{quote}
+
+Critically, the mathematical content is identical across conditions; only the surrounding format differs. Full prompts for all conditions and datasets are provided in \secref{sec:appendix_prompts}.
+
+\subsection{Benchmarks}
+\label{sec:benchmarks}
+
+We select four benchmarks spanning distinct reasoning domains:
+
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
+\item \textbf{\gsm} \citep{cobbe2021gsm8k}: Grade-school math word problems requiring multi-step arithmetic. We sample 150 questions from the test split.
+\item \textbf{\csqa} \citep{talmor2019commonsenseqa}: 5-way multiple-choice commonsense questions. We sample 150 questions from the validation split.
+\item \textbf{\strategyqa} \citep{geva2021strategyqa}: Yes/no questions requiring multi-hop reasoning over implicit world knowledge. We sample 150 questions from the train split.
+\item \textbf{\arc} \citep{clark2018arc}: 4-way multiple-choice science questions from standardized tests. We sample 150 questions from the Challenge test split.
+\end{itemize}
+
+All sampling uses a fixed random seed of 42. We verified that all 600 samples have valid questions and gold answers with no missing values or duplicates.
+
+\subsection{Model and Inference}
+\label{sec:model}
+
+We use \gptfour (OpenAI, 2025) for all experiments. We set temperature to 0 for deterministic outputs and max tokens to 1024. All 2,400 API calls (4 strategies $\times$ 4 datasets $\times$ 150 questions) were executed with 10 parallel workers, completing in approximately 6 minutes.
+
+\subsection{Evaluation}
+\label{sec:eval}
+
+\para{Primary metric.} We report accuracy as the percentage of questions where the extracted answer exactly matches the gold answer. For \gsm, we extract the final numeric value; for \csqa and \arc, we extract the answer letter; for \strategyqa, we extract Yes/No.
+
+\para{Statistical testing.} We use McNemar's test for pairwise comparison of strategies on the same questions, as it is designed for paired binary outcomes. We report bootstrap 95\% confidence intervals computed with 10,000 resamples. We consider $p < 0.05$ as the significance threshold.
+
+\para{Secondary metric.} We measure average response length (in characters) to quantify verbosity differences across reasoning formats.
+
+\subsection{Power Analysis}
+\label{sec:power}
+
+With 150 samples per dataset, we have approximately 80\% power to detect accuracy differences of 10 percentage points or larger between conditions. This is sufficient to detect practically meaningful differences while remaining cost-efficient (total experiment cost: \$2.64).

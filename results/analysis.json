@@ -1,0 +1,166 @@
+{
+  "accuracy_table": [
+    {
+      "dataset": "gsm8k",
+      "strategy": "direct",
+      "accuracy": "59.3%",
+      "ci_95": "[51.3%, 67.3%]",
+      "n": 150
+    },
+    {
+      "dataset": "gsm8k",
+      "strategy": "zero_shot_cot",
+      "accuracy": "96.0%",
+      "ci_95": "[92.7%, 98.7%]",
+      "n": 150
+    },
+    {
+      "dataset": "gsm8k",
+      "strategy": "few_shot_cot",
+      "accuracy": "95.3%",
+      "ci_95": "[92.0%, 98.7%]",
+      "n": 150
+    },
+    {
+      "dataset": "gsm8k",
+      "strategy": "story_cot",
+      "accuracy": "95.3%",
+      "ci_95": "[92.0%, 98.7%]",
+      "n": 150
+    },
+    {
+      "dataset": "commonsenseqa",
+      "strategy": "direct",
+      "accuracy": "88.7%",
+      "ci_95": "[83.3%, 93.3%]",
+      "n": 150
+    },
+    {
+      "dataset": "commonsenseqa",
+      "strategy": "zero_shot_cot",
+      "accuracy": "74.7%",
+      "ci_95": "[67.3%, 81.3%]",
+      "n": 150
+    },
+    {
+      "dataset": "commonsenseqa",
+      "strategy": "few_shot_cot",
+      "accuracy": "88.0%",
+      "ci_95": "[82.7%, 93.3%]",
+      "n": 150
+    },
+    {
+      "dataset": "commonsenseqa",
+      "strategy": "story_cot",
+      "accuracy": "89.3%",
+      "ci_95": "[84.0%, 94.0%]",
+      "n": 150
+    },
+    {
+      "dataset": "strategyqa",
+      "strategy": "direct",
+      "accuracy": "84.7%",
+      "ci_95": "[78.7%, 90.0%]",
+      "n": 150
+    },
+    {
+      "dataset": "strategyqa",
+      "strategy": "zero_shot_cot",
+      "accuracy": "86.0%",
+      "ci_95": "[80.0%, 91.3%]",
+      "n": 150
+    },
+    {
+      "dataset": "strategyqa",
+      "strategy": "few_shot_cot",
+      "accuracy": "89.3%",
+      "ci_95": "[84.0%, 94.0%]",
+      "n": 150
+    },
+    {
+      "dataset": "strategyqa",
+      "strategy": "story_cot",
+      "accuracy": "88.0%",
+      "ci_95": "[82.7%, 92.7%]",
+      "n": 150
+    },
+    {
+      "dataset": "arc_challenge",
+      "strategy": "direct",
+      "accuracy": "75.3%",
+      "ci_95": "[68.7%, 82.0%]",
+      "n": 150
+    },
+    {
+      "dataset": "arc_challenge",
+      "strategy": "zero_shot_cot",
+      "accuracy": "72.0%",
+      "ci_95": "[64.7%, 79.3%]",
+      "n": 150
+    },
+    {
+      "dataset": "arc_challenge",
+      "strategy": "few_shot_cot",
+      "accuracy": "93.3%",
+      "ci_95": "[89.3%, 97.3%]",
+      "n": 150
+    },
+    {
+      "dataset": "arc_challenge",
+      "strategy": "story_cot",
+      "accuracy": "94.7%",
+      "ci_95": "[90.7%, 98.0%]",
+      "n": 150
+    }
+  ],
+  "statistical_tests": {
+    "story_vs_cot": {
+      "gsm8k": {
+        "chi2": 0.16666666666666666,
+        "p_value": 0.6830913983096086,
+        "n_10": 3,
+        "n_01": 3,
+        "diff": 0.0
+      },
+      "commonsenseqa": {
+        "chi2": 0.1,
+        "p_value": 0.7518296340458492,
+        "n_10": 6,
+        "n_01": 4,
+        "diff": 0.013333333333333334
+      },
+      "strategyqa": {
+        "chi2": 0.08333333333333333,
+        "p_value": 0.7728299926844475,
+        "n_10": 5,
+        "n_01": 7,
+        "diff": -0.013333333333333334
+      },
+      "arc_challenge": {
+        "chi2": 0.5,
+        "p_value": 0.47950012218695337,
+        "n_10": 2,
+        "n_01": 0,
+        "diff": 0.013333333333333334
+      }
+    }
+  },
+  "trace_analysis": {
+    "gsm8k": {
+      "story_wins": 3,
+      "cot_wins": 3
+    },
+    "commonsenseqa": {
+      "story_wins": 6,
+      "cot_wins": 4
+    },
+    "arc_challenge": {
+      "story_wins": 2,
+      "cot_wins": 0
+    },
+    "strategyqa": {
+      "story_wins": 5,
+      "cot_wins": 7
+    }
+  }
+}

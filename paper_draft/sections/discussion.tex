@@ -1,0 +1,51 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Evidence for Computational Scaffolding}
+\label{sec:scaffolding}
+
+Our central finding---that \storycot and \fewshotcot achieve equivalent performance---provides direct evidence for the \emph{computational scaffolding hypothesis}: CoT improves reasoning by providing intermediate token positions where the model can perform computation, not by imposing a particular logical structure on that computation. Whether those tokens take the form of ``Step 1: $21 - 15 = 6$'' or ``By sunset, someone counts 21 trees---the workers must have added $21 - 15 = 6$,'' the underlying computation appears identical.
+
+This finding complements \citet{schaeffer2023invalid}, who showed that \emph{logically invalid} CoT still improves performance. Together, these results suggest a strong version of format independence: what matters is that the model generates intermediate tokens before answering, not the logical validity or surface form of those tokens.
+
+\subsection{When Does Format Matter?}
+\label{sec:format}
+
+While reasoning format (\storycot vs.\ \fewshotcot) does not affect accuracy, we observe that \emph{prompting strategy} matters greatly. \zeroshotcot degrades performance on \csqa (--14 pp) and \arc (--3.3 pp), while few-shot methods consistently help. This suggests a hierarchy of importance:
+
+\begin{enumerate}[leftmargin=*,itemsep=0pt,topsep=0pt]
+\item \textbf{Exemplar presence} (few-shot vs.\ zero-shot): High impact. Exemplars provide critical guidance that prevents reasoning from going off track.
+\item \textbf{Reasoning presence} (CoT vs.\ direct): High impact on multi-step tasks. Intermediate tokens enable computation that direct answering cannot support.
+\item \textbf{Reasoning format} (narrative vs.\ steps): No measurable impact. The surface form of reasoning is not a significant factor for \gptfour.
+\end{enumerate}
+
+\subsection{Qualitative Differences in Reasoning}
+\label{sec:qualitative}
+
+Although accuracy is equivalent, the \emph{character} of reasoning differs between conditions. On \csqa, when asked ``How might releasing energy that has built up feel?'', \storycot narrated a stressed person exercising and feeling relief, correctly identifying ``cathartic.'' \fewshotcot reasoned abstractly through answer options and selected a less apt answer. On \arc, when asked about products of adding HCl to Zn, \storycot narrated a chemistry lab scene with bubbles forming (hydrogen gas), while \fewshotcot reasoned abstractly and chose incorrectly.
+
+These cases suggest that narrative framing can activate situational and experiential knowledge. However, the cases where \fewshotcot wins are equally instructive---the benefits are symmetric and cancel out in aggregate.
+
+\subsection{Reconciling with Prior Work}
+\label{sec:reconciling}
+
+\citet{zhang2024narrative} reported dramatic improvements (16--71\% F1) with Narrative-of-Thought on temporal graph generation. How do we reconcile this with our null result? We identify two key differences:
+
+\para{Task structure.} Temporal graph generation requires producing \emph{structured output} (graphs) from event descriptions, where narrative ordering directly aligns with the required temporal structure. Our benchmarks require extracting a single answer from reasoning, where the alignment between narrative structure and answer format is weaker.
+
+\para{Baseline strength.} \citet{zhang2024narrative} compared narrative prompting against standard prompting (no CoT), while we compare against \fewshotcot. The NOT improvements may largely reflect the general benefit of structured intermediate reasoning, which our \fewshotcot baseline already captures.
+
+These observations suggest that narrative reasoning may be especially beneficial for tasks requiring \emph{structured temporal output}, rather than for general reasoning.
+
+\subsection{Limitations}
+\label{sec:limitations}
+
+\para{Single model.} We test only \gptfour. Smaller models, where CoT is an emergent capability that appears near the scale threshold, may show different sensitivity to reasoning format. Testing on models like Llama-8B or GPT-3.5 could reveal format effects that are masked by \gptfour's strong capabilities.
+
+\para{Single narrative style.} We test one narrative design (third-person, vivid, temporally structured). Alternative styles---first-person accounts, dialogue, mystery-solving---might yield different results.
+
+\para{Sample size.} With 150 samples per dataset, we have 80\% power to detect 10 pp differences. Smaller but practically meaningful effects (3--5 pp) would require larger samples to detect.
+
+\para{Deterministic decoding.} Temperature 0 prevents measuring model uncertainty. Self-consistency experiments with temperature $> 0$ could reveal whether narrative diversity improves majority voting, as suggested by \citet{wang2023selfconsistency}.
+
+\para{Task scope.} We test standard QA benchmarks. The NOT paper's success on temporal graph generation suggests that \storycot may excel on tasks we did not evaluate, particularly those involving structured or temporal outputs.

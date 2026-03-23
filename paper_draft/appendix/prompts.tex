@@ -1,0 +1,61 @@
+\section{Prompt Templates}
+\label{sec:appendix_prompts}
+
+We provide representative prompt templates for the \gsm benchmark. Prompts for other benchmarks follow the same structure with domain-appropriate exemplars.
+
+\subsection{\fewshotcot Exemplar (GSM8K)}
+
+\begin{lstlisting}
+Q: There are 15 trees in the grove. Grove workers will plant
+trees in the grove today. After they are done, there will be 21
+trees. How many trees did the grove workers plant today?
+A: Step 1: We start with 15 trees.
+Step 2: After planting, there are 21 trees.
+Step 3: The number planted is 21 - 15 = 6.
+The answer is 6.
+\end{lstlisting}
+
+\subsection{\storycot Exemplar (GSM8K)}
+
+\begin{lstlisting}
+Q: There are 15 trees in the grove. Grove workers will plant
+trees in the grove today. After they are done, there will be 21
+trees. How many trees did the grove workers plant today?
+A: Imagine a grove at dawn with 15 trees standing tall. A team
+of workers arrives with saplings on a truck. They spend the
+morning digging holes and carefully planting new trees among the
+existing ones. By sunset, someone walks through and counts every
+tree -- there are now 21 in total. The original 15 haven't
+changed, so the workers must have added 21 minus 15, which is 6
+new trees during their day's work.
+The answer is 6.
+\end{lstlisting}
+
+\subsection{\storycot Exemplar (CommonsenseQA)}
+
+\begin{lstlisting}
+Q: Where do you put your grapes just before checking out?
+(A) mouth (B) move (C) basket (D) fruit stand (E) fruit market
+A: Picture yourself in a grocery store, pushing a cart through
+the produce aisle. You spot a display of fresh grapes and pick
+up a bunch, examining them briefly. Before heading to the
+checkout counter, you place the grapes into your shopping
+basket alongside your other items.
+The answer is C.
+\end{lstlisting}
+
+\subsection{\storycot Exemplar (ARC-Challenge)}
+
+\begin{lstlisting}
+Q: Which property of a mineral can be determined just by
+looking at it?
+(A) luster (B) mass (C) weight (D) hardness
+A: Imagine a geologist crouching beside a rocky outcrop on a
+sunny afternoon. She picks up a mineral specimen and holds it up
+to the light, tilting it back and forth. The way the surface
+catches and reflects the sunlight -- its sheen and brilliance --
+tells her immediately about its luster. She would need a scale
+for mass, a balance for weight, and a scratch test for hardness,
+but luster reveals itself to the naked eye.
+The answer is A.
+\end{lstlisting}
