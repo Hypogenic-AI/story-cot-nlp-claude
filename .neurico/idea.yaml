@@ -1,0 +1,30 @@
+idea:
+  title: Story CoT
+  domain: nlp
+  hypothesis: 'Training language models to use chain-of-thought (CoT) reasoning in
+    the form of stories, as humans do when recounting memories or ideas about situations,
+    will result in improved performance on certain tasks compared to standard CoT
+    approaches. This approach may reveal whether models are capable of producing story-like
+    CoTs or if current CoT methods exploit hidden patterns in large language models.
+
+    '
+  background:
+    description: 'Current chain-of-thought (CoT) methods simulate a fuzzy reasoning
+      process, but it is hypothesized that humans actually think in stories. This
+      idea proposes training models from base to post-training to use CoTs in the
+      form of stories, similar to how people recount memories or predict outcomes
+      in situations. The research aims to determine if this approach improves performance,
+      particularly in tasks like physics problem modeling, and whether models can
+      generate story-like CoTs or if existing CoT methods leverage special patterns
+      in language models.
+
+      '
+  metadata:
+    author: Ari Holtzman
+    source: IdeaHub
+    source_url: https://hypogenic.ai/ideahub/idea/mhakpZmiPP1PFynKutlW
+    idea_id: story_cot_20260323_035907_c5b21798
+    created_at: '2026-03-23T03:59:07.898248'
+    status: submitted
+    github_repo_name: story-cot-nlp-claude
+    github_repo_url: https://github.com/Hypogenic-AI/story-cot-nlp-claude
